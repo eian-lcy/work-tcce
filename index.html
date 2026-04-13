@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="zh-TW">
 
@@ -6,7 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>撥款key-in</title>
     <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <!-- <link rel="stylesheet" href="style.css"> -->
     <style>
         /* --- 基礎設定 --- */
@@ -944,20 +944,6 @@
     <!-- <script src="script.js"></script> -->
 
     <script>
-        // --- Supabase 初始化 ---
-        const supabaseUrl = 'https://YOUR_SUPABASE_URL.supabase.co';
-        const supabaseKey = 'YOUR_SUPABASE_ANON_KEY';
-        const _supabase = supabase.createClient(supabaseUrl, supabaseKey);
-        
-        // --- 新增 Alt + Enter 監聽 ---
-        window.addEventListener('keydown', function (e) {
-            // 偵測 Alt + Enter
-            if (e.altKey && e.key === 'Enter') {
-                e.preventDefault(); // 避免可能的預設行為
-                console.log("觸發 Alt+Enter：執行加入暫存");
-                saveCurrentBatch();
-            }
-        });
         // ==========================================
         // 1. 設定分類資料
         // ==========================================
@@ -982,6 +968,7 @@
             "726, 黃書澤": "726黃書澤",
             "824, 陳俊豪": "824陳俊豪",
             "李正傑": "立桀工程顧問有限公司",
+            "王錦智": "詠新工程顧問有限公司",
             "邱華宗": "駿宏工程顧問有限公司",
             "一品, 宋介文": "一品工程顧問有限公司-宋介文",
             "力陽, 許耿蒼": "力陽土木技師事務所-許耿蒼",
@@ -989,7 +976,7 @@
             "士億": "士億土木技師事務所",
             "大匠, 許庭偉公司": "大匠工程顧問有限公司",
             "大作, 何修安": "大作土木技師事務所-何修安",
-            "小白鈴, 謝秀婷": "小白鈴土木技師事務所-謝秀婷",
+            "小白姈, 小白, 謝秀婷": "小白姈土木技師事務所-謝秀婷",
             "中一, 伍勝民": "中一土木結構技師事務所-伍勝民",
             "中信": "中信設計有限公司",
             "中研": "中研工程設計有限公司",
@@ -1089,7 +1076,6 @@
                     e.returnValue = '';
                 }
             });
-            fetchFromSupabase();
         };
 
         function initCategorySelects() {
@@ -1356,78 +1342,78 @@
         }
 
         // --- 存檔與更新 ---
-        async function saveCurrentBatch() {
-    const date = document.getElementById('dateInput').value;
-    const rawCaseNo = document.getElementById('caseNoInput').value.trim();
-    const cat1 = document.getElementById('cat1Input').value;
-    const cat2 = document.getElementById('cat2Input').value;
-    const dept = document.getElementById('deptInput').value.trim();
-    const extraNote = document.getElementById('extraNoteInput').value.trim();
-    const usage = document.getElementById('usagePreview').value.trim();
-    const editingId = document.getElementById('editingBatchId').value;
+        function saveCurrentBatch() {
+            const date = document.getElementById('dateInput').value;
+            const rawCaseNo = document.getElementById('caseNoInput').value.trim();
+            const cat1 = document.getElementById('cat1Input').value;
+            const cat2 = document.getElementById('cat2Input').value;
+            const dept = document.getElementById('deptInput').value.trim();
+            const extraNote = document.getElementById('extraNoteInput').value.trim();
+            const usage = document.getElementById('usagePreview').value.trim();
+            const editingId = document.getElementById('editingBatchId').value;
 
-    if (!date || !usage) { alert("日期或用途不可空白"); return; }
+            if (!date) { alert("請選擇日期"); return; }
 
-    const names = document.querySelectorAll('.payee-name');
-    const amounts = document.querySelectorAll('.payee-amount');
-    const scans = document.querySelectorAll('.payee-scan');
+            if (!editingId) {
+                if (cat1 !== "津貼" && cat1 !== "其他" && !rawCaseNo) {
+                    alert("請輸入案號"); return;
+                }
+            }
 
-    let batchPayees = [];
-    let batchTotal = 0;
-    const fmtCaseNo = getFormattedCaseNo(rawCaseNo, cat1);
+            if (!usage) { alert("用途欄位空白"); return; }
 
-    for (let i = 0; i < names.length; i++) {
-        let n = names[i].value.trim();
-        let a = parseFloat(amounts[i].value) || 0;
-        let s = parseFloat(scans[i].value) || 0;
-        if (n) {
-            // ... (保留你原本的 autoTax / autoHealth 判斷邏輯) ...
-            batchPayees.push({
-                name: n, amount: a, scanFee: s, 
-                incomeUsage: usage, scanUsage: `${fmtCaseNo}掃描費`,
-                isTax: autoTax, isHealth: autoHealth 
-            });
-            batchTotal += (a - s);
-        }
-    }
+            const names = document.querySelectorAll('.payee-name');
+            const amounts = document.querySelectorAll('.payee-amount');
+            const scans = document.querySelectorAll('.payee-scan');
 
-    if (batchPayees.length === 0) { alert("請輸入受款人"); return; }
+            let batchPayees = [];
+            let batchTotal = 0;
+            const fmtCaseNo = getFormattedCaseNo(rawCaseNo, cat1);
 
-    // --- 準備資料物件 ---
-    const batchData = {
-        batch_id: editingId ? String(editingId) : String(Date.now()),
-        date: date,
-        cat1: cat1,
-        cat2: cat2,
-        raw_case_no: rawCaseNo,
-        dept: dept,
-        extra_note: extraNote,
-        usage: usage,
-        payees: batchPayees,
-        total: batchTotal
-    };
+            for (let i = 0; i < names.length; i++) {
+                let n = names[i].value.trim();
+                let a = parseFloat(amounts[i].value) || 0;
+                let s = parseFloat(scans[i].value) || 0;
 
-    // --- 寫入 Supabase ---
-    const { error } = await _supabase
-        .from('disbursement_batches')
-        .upsert(batchData, { onConflict: 'batch_id' });
+                if (n) {
+                    // ==========================================
+                    // ★★★ 自動判斷扣繳與健保邏輯 ★★★
+                    // ==========================================
+                    let autoTax = false;
+                    let autoHealth = false;
 
-    if (error) {
-        console.error('Save failed:', error);
-        alert('儲存至雲端失敗！');
-    } else {
-        alert(editingId ? '雲端資料已更新！' : '已成功同步至雲端暫存！');
-        // 重新讀取雲端資料以刷新 UI
-        fetchFromSupabase(); 
-        clearInputs();
-        
-        // 重置編輯狀態
-        document.getElementById('editingBatchId').value = "";
-        const btnSave = document.getElementById('btnSaveBatch');
-        btnSave.textContent = "⬇ 加入暫存列表 (輸入下一案)";
-        btnSave.classList.remove('editing');
-    }
-}
+                    if (cat1 === "津貼") {
+                        // 1. 如果是津貼，一律不扣稅、不扣健保
+                        autoTax = false;
+                        autoHealth = false;
+                    } else if (n.includes("公司") || n.includes("郵局") || n === "麗邦企業社") {
+                        // 2. 如果名稱包含「公司」或「郵局」或等於「麗邦企業社」
+                        autoTax = false;
+                        autoHealth = false;
+                    } else if (n.includes("事務所")) {
+                        // 3. 如果名稱包含「事務所」
+                        autoTax = true;
+                        autoHealth = false;
+                    } else {
+                        // 4. 其他情況 (例如個人技師)
+                        autoTax = true;
+                        // 健保費：案件金額大於等於 20000 才要扣
+                        autoHealth = (a >= 20000); 
+                    }
+
+                    batchPayees.push({
+                        name: n,
+                        amount: a,
+                        scanFee: s,
+                        incomeUsage: usage,
+                        scanUsage: `${fmtCaseNo}掃描費`,
+                        isTax: autoTax,
+                        isHealth: autoHealth
+                    });
+                    batchTotal += a;
+                    if (s > 0) batchTotal -= s;
+                }
+            }
 
             if (batchPayees.length === 0) {
                 alert("請至少輸入一筆撥款人資料");
@@ -1525,29 +1511,7 @@
             editBatch(id);
             alert("已載入案件資料，請修改「撥款日期」或「內容」後，按下「更新」按鈕。");
         }
-        async function fetchFromSupabase() {
-            const { data, error } = await _supabase
-                .from('disbursement_batches')
-                .select('*')
-                .order('created_at', { ascending: false });
-        
-            if (!error && data) {
-                // 將 Supabase 資料格式轉回你原本程式用的 allBatches 格式
-                allBatches = data.map(item => ({
-                    id: item.batch_id, // 使用我們存的文字 ID
-                    date: item.date,
-                    cat1: item.cat1,
-                    cat2: item.cat2,
-                    rawCaseNo: item.raw_case_no,
-                    dept: item.dept,
-                    extraNote: item.extra_note,
-                    usage: item.usage,
-                    payees: item.payees,
-                    total: item.total
-                }));
-                renderSavedList();
-            }
-        }
+
         function deleteBatch(id) {
             if (confirm("確定要刪除此筆暫存資料嗎？")) {
                 allBatches = allBatches.filter(b => b.id !== id);
