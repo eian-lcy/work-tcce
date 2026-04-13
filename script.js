@@ -13,18 +13,6 @@
       "其他": ["其他"]
   };
 
-  // ★★★ 自動轉換邏輯 (程式會自動把上面的逗號拆開，變成一對一的對照表) ★★★
-  const payeeRegistry = {}; // 這是給程式內部查表用的
-  for (let [keys, fullName] of Object.entries(rawPayeeRegistry)) {
-      // 依據逗號拆分，並去除前後空白
-      keys.split(/,|，/).forEach(key => {
-          const cleanKey = key.trim();
-          if (cleanKey) {
-              payeeRegistry[cleanKey] = fullName;
-          }
-      });
-  }
-
   let allBatches = [];
   let currentRightClickInput = null; // 暫存目前被按右鍵的輸入框
 
