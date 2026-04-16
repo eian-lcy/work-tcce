@@ -58,7 +58,7 @@ function exportToExcel() {
             }
 
             if (p.scanFee > 0) {
-                if (!peopleMap[p.name.trim)]]) peopleMap[p.name.trim()] = [];
+                if (!peopleMap[p.name.trim)]) peopleMap[p.name.trim()] = [];
                 peopleMap[p.name].push({
                     usage: p.scanUsage,
                     listed: -p.scanFee,
