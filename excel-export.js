@@ -194,9 +194,7 @@ function exportToExcel() {
     }
 
     ws['!merges'] = merges;
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "撥款明細");
-
+    
     // --- Sheet 2: 扣繳稅額表 ---
     const taxDataRaw = [];
     for (let [name, entries] of Object.entries(peopleMap)) {
