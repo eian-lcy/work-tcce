@@ -38,8 +38,9 @@ function exportToExcel() {
     // 整理資料
     targetBatches.forEach(batch => {
         batch.payees.forEach(p => {
+            const cleanedName = p.name ? p.name.trim() : "無姓名";
             if (p.amount !== 0) {
-                if (!peopleMap[p.name]) peopleMap[p.name] = [];
+                if (!peopleMap[cleanedName]) peopleMap[cleanedName] = [];
                 let tax = 0;
                 let health = 0;
                 if (p.isTax) tax = Math.round(p.amount * 0.1);
