@@ -174,6 +174,16 @@ function exportToExcel() {
         
         for (let C = 0; C <= 5; ++C) {
             const cell_address = XLSX.utils.encode_cell({ r: R, c: C });
+
+            // 檢查該儲存格是否在合併範圍內且「不是」合併的起點
+            const isMergedSecondary = merges.some(m => 
+                R >= m.s.r && R <= m.e.r && 
+                C >= m.s.c && C <= m.e.c && 
+                !(R === m.s.r && C === m.s.c)
+            );
+    
+            // 如果是合併後的配角儲存格，就不給值也不給邊框，避免干擾複製內容
+            if (isMergedSecondary) continue;
             
             if (!ws[cell_address]) {
                 ws[cell_address] = { t: 's', v: "" }; 
