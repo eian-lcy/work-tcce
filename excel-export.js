@@ -6,8 +6,12 @@ function syncUiStateToDataModel() {
         const batchId = parseInt(tr.getAttribute('data-batch-id'));
         const payeeIndex = parseInt(tr.getAttribute('data-payee-index'));
         const type = tr.getAttribute('data-type');
-        const isTax = tr.querySelector('.chk-tax').checked;
-        const isHealth = tr.querySelector('.chk-health').checked;
+        
+        const chkTax = tr.querySelector('.chk-tax');
+        const chkHealth = tr.querySelector('.chk-health');
+        
+        const isTax = chkTax ? chkTax.checked : false;
+        const isHealth = chkHealth ? chkHealth.checked : false;
 
         const batch = allBatches.find(b => b.id === batchId);
         if (batch && batch.payees[payeeIndex]) {
@@ -35,18 +39,15 @@ function exportToExcel() {
     const targetBatches = allBatches.filter(b => b.date === dateStr);
     const peopleMap = {};
 
-    // 整理資料
     targetBatches.forEach(batch => {
         batch.payees.forEach(p => {
-            const cleanedName = p.name ? p.name.trim() : "無姓名";
+            const name = p.name ? p.name.trim() : "未知";
             if (p.amount !== 0) {
-                if (!peopleMap[cleanedName]) peopleMap[cleanedName] = [];
-                let tax = 0;
-                let health = 0;
-                if (p.isTax) tax = Math.round(p.amount * 0.1);
-                if (p.isHealth) health = Math.round(p.amount * 0.0211);
+                if (!peopleMap[name]) peopleMap[name] = [];
+                let tax = p.isTax ? Math.round(p.amount * 0.1) : 0;
+                let health = p.isHealth ? Math.round(p.amount * 0.0211) : 0;
 
-                peopleMap[p.name].push({
+                peopleMap[name].push({
                     usage: p.incomeUsage,
                     listed: p.amount,
                     tax: tax,
@@ -58,8 +59,8 @@ function exportToExcel() {
             }
 
             if (p.scanFee > 0) {
-                if (!peopleMap[p.name.trim()]) peopleMap[p.name.trim()] = [];
-                peopleMap[p.name].push({
+                if (!peopleMap[name]) peopleMap[name] = [];
+                peopleMap[name].push({
                     usage: p.scanUsage,
                     listed: -p.scanFee,
                     tax: 0,
@@ -91,14 +92,8 @@ function exportToExcel() {
             currentDataIndex++; 
             const excelRow = currentDataIndex + 1; 
 
-            let taxCell = 0;
-            let healthCell = 0;
-            if (e.isTax) {
-                taxCell = { t: 'n', f: `ROUND(D${excelRow}*0.1, 0)`, v: e.tax };
-            }
-            if (e.isHealth) {
-                healthCell = { t: 'n', f: `ROUND(D${excelRow}*0.0211, 0)`, v: e.health };
-            }
+            let taxCell = e.isTax ? { t: 'n', f: `ROUND(D${excelRow}*0.1, 0)`, v: e.tax } : 0;
+            let healthCell = e.isHealth ? { t: 'n', f: `ROUND(D${excelRow}*0.0211, 0)`, v: e.health } : 0;
 
             if (idx === 0) {
                 ws_data.push([name, null, e.usage, e.listed, taxCell, healthCell]);
@@ -145,6 +140,7 @@ function exportToExcel() {
 
     const ws = XLSX.utils.aoa_to_sheet(ws_data);
 
+    // --- 樣式設定 (包含空格修正) ---
     const fontStyle16 = { name: "標楷體", sz: 16, bold: true };
     const fontStyle12 = { name: "標楷體", sz: 12, bold: true };
     const currencyFmt = '"$"#,##0_ ;"-$"#,##0_ ; ';
@@ -155,39 +151,24 @@ function exportToExcel() {
         right: { style: "thin" }
     };
 
-    ws['!cols'] = [
-        { wch: 20.13 }, { wch: 21.25 }, { wch: 43.38 }, { wch: 17.5 }, { wch: 14.25 }, { wch: 11.88 }
-    ];
-
-    ws['!pageSetup'] = { 
-        fitToPage: true, 
-        fitToWidth: 1, 
-        fitToHeight: 0 
-    };
-
+    ws['!cols'] = [{ wch: 20.13 }, { wch: 21.25 }, { wch: 43.38 }, { wch: 17.5 }, { wch: 14.25 }, { wch: 11.88 }];
     const range = XLSX.utils.decode_range(ws['!ref']);
-    range.e.c = Math.max(range.e.c, 5);
-    ws['!ref'] = XLSX.utils.encode_range(range);
 
     for (let R = range.s.r; R <= range.e.r; ++R) {
-        const isHeaderRow = (ws_data[R] && ws_data[R][0] === "明細資料");
-        
         for (let C = 0; C <= 5; ++C) {
             const cell_address = XLSX.utils.encode_cell({ r: R, c: C });
-
-            // 檢查該儲存格是否在合併範圍內且「不是」合併的起點
+            
+            // 重要：判斷是否為被合併掉的「配角格」
             const isMergedSecondary = merges.some(m => 
                 R >= m.s.r && R <= m.e.r && 
                 C >= m.s.c && C <= m.e.c && 
                 !(R === m.s.r && C === m.s.c)
             );
-    
-            // 如果是合併後的配角儲存格，就不給值也不給邊框，避免干擾複製內容
+
+            // 如果是配角格，不要賦值，避免複製時出現空格
             if (isMergedSecondary) continue;
-            
-            if (!ws[cell_address]) {
-                ws[cell_address] = { t: 's', v: "" }; 
-            }
+
+            if (!ws[cell_address]) ws[cell_address] = { t: 's', v: "" };
             if (!ws[cell_address].s) ws[cell_address].s = {};
 
             ws[cell_address].s.border = thinBorder;
@@ -195,38 +176,26 @@ function exportToExcel() {
             ws[cell_address].s.alignment = { vertical: "center" };
 
             const val = ws[cell_address].v;
-
-            if (C === 0) {
-                ws[cell_address].s.alignment = { horizontal: "center", vertical: "center", wrapText: true };
-            }
+            if (C === 0) ws[cell_address].s.alignment.horizontal = "center";
             else if (C === 1) {
-                ws[cell_address].s.alignment = { horizontal: "center", vertical: "center", wrapText: true };
+                ws[cell_address].s.alignment.horizontal = "center";
                 if (ws[cell_address].t === 'n' || ws[cell_address].f) ws[cell_address].z = currencyFmt;
             }
             else if (C === 2) {
-                ws[cell_address].s.alignment = { shrinkToFit: true, wrapText: true, vertical: "center" };
-                if (val !== "用途" && val !== "合計" && val !== "總計" && val !== "") {
-                    ws[cell_address].s.font = fontStyle12;
-                }
-                if (isHeaderRow || val === "用途") {
-                    ws[cell_address].s.alignment.horizontal = "center";
-                }
-                if (val === "合計" || val === "總計") {
-                    ws[cell_address].s.alignment.horizontal = "right";
-                }
+                ws[cell_address].s.alignment.wrapText = true;
+                if (val !== "用途" && val !== "合計" && val !== "總計" && val !== "") ws[cell_address].s.font = fontStyle12;
+                if (val === "合計" || val === "總計") ws[cell_address].s.alignment.horizontal = "right";
             }
             else if (C >= 3) {
                 if (ws[cell_address].t === 'n' || ws[cell_address].f) ws[cell_address].z = currencyFmt;
-                ws[cell_address].s.alignment = { horizontal: "right", vertical: "center", wrapText: true };
-                if (isHeaderRow) {
-                    ws[cell_address].s.alignment.horizontal = "center";
-                }
+                ws[cell_address].s.alignment.horizontal = "right";
             }
         }
     }
 
-    if (ws['A1']) ws['A1'].s.alignment = { horizontal: "center", vertical: "center" };
     ws['!merges'] = merges;
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "撥款明細");
 
     // --- Sheet 2: 扣繳稅額表 ---
     const taxDataRaw = [];
