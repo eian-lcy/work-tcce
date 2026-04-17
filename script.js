@@ -184,6 +184,7 @@ function getFormattedCaseNo(caseNo, mainCat) {
 }
 
 function getSuffix(subCat) {
+    const target = (subCat || "").trim();
     if (subCat === "耐震標章") return "(耐震標章)";
     const standardSuffixes = [
         "現況鑑定", "都市更新", "安全鑑定", "損害修復", "未報勘驗", "工程鑑估",
