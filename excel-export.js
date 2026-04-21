@@ -155,7 +155,7 @@ function exportToExcel() {
     };
 
     ws['!cols'] = [
-        { wch: 20.13 }, { wch: 21.25 }, { wch: 43.38 }, { wch: 17.5 }, { wch: 14.25 }, { wch: 11.88 }
+        { wch: 23.75 }, { wch: 21.25 }, { wch: 65.63 }, { wch: 19.38 }, { wch: 14.25 }, { wch: 11.88 }
     ];
 
     ws['!pageSetup'] = { 
