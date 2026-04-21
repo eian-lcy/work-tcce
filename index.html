@@ -53,6 +53,28 @@
                         <label style="line-height: 30px; font-weight: bold;">▼ 本案用途 (可手動修改)</label><br>
                         <input class="p1-in3" type="text" id="usagePreview">
                     </div>
+                    <div class="calculator-box" style="margin-top: 20px; padding: 10px; border: 1px solid #ccc; border-radius: 4px; background: #eee;">
+                        <label style="font-weight: bold; display: block; margin-bottom: 5px;">簡易計算機</label>
+                        <input type="text" id="calcDisplay" readonly style="width: 100%; height: 35px; text-align: right; margin-bottom: 5px; padding: 5px;">
+                        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px;">
+                            <button type="button" onclick="calcAppend('7')">7</button>
+                            <button type="button" onclick="calcAppend('8')">8</button>
+                            <button type="button" onclick="calcAppend('9')">9</button>
+                            <button type="button" onclick="calcAppend('/')">/</button>
+                            <button type="button" onclick="calcAppend('4')">4</button>
+                            <button type="button" onclick="calcAppend('5')">5</button>
+                            <button type="button" onclick="calcAppend('6')">6</button>
+                            <button type="button" onclick="calcAppend('*')">*</button>
+                            <button type="button" onclick="calcAppend('1')">1</button>
+                            <button type="button" onclick="calcAppend('2')">2</button>
+                            <button type="button" onclick="calcAppend('3')">3</button>
+                            <button type="button" onclick="calcAppend('-')">-</button>
+                            <button type="button" onclick="calcClear()">C</button>
+                            <button type="button" onclick="calcAppend('0')">0</button>
+                            <button type="button" onclick="calcCalculate()" style="background: #27ae60; color: white;">=</button>
+                            <button type="button" onclick="calcAppend('+')">+</button>
+                        </div>
+                    </div>
                 </div>
                 <div class="part1-right">
                     <div class="list-header">
