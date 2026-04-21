@@ -919,3 +919,20 @@ window.onclick = function (event) {
         modal.style.display = "none";
     }
 }
+
+// 計算機邏輯
+function calcAppend(val) {
+    document.getElementById('calcDisplay').value += val;
+}
+function calcClear() {
+    document.getElementById('calcDisplay').value = '';
+}
+function calcCalculate() {
+    try {
+        const result = eval(document.getElementById('calcDisplay').value);
+        document.getElementById('calcDisplay').value = result;
+    } catch (e) {
+        alert("計算錯誤");
+        calcClear();
+    }
+}
