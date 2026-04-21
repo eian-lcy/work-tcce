@@ -920,19 +920,83 @@ window.onclick = function (event) {
     }
 }
 
-// 計算機邏輯
+// --- 1. 計算機基礎功能 ---
+function toggleCalculator() {
+    const calc = document.getElementById('calculator');
+    calc.style.display = (calc.style.display === 'block') ? 'none' : 'block';
+}
+
 function calcAppend(val) {
     document.getElementById('calcDisplay').value += val;
 }
+
 function calcClear() {
     document.getElementById('calcDisplay').value = '';
 }
+
+function calcBackspace() {
+    const display = document.getElementById('calcDisplay');
+    display.value = display.value.slice(0, -1);
+}
+
 function calcCalculate() {
+    const display = document.getElementById('calcDisplay');
     try {
-        const result = eval(document.getElementById('calcDisplay').value);
-        document.getElementById('calcDisplay').value = result;
+        // 使用 Function 代替 eval 較安全
+        const result = new Function('return ' + display.value)();
+        display.value = Number.isInteger(result) ? result : result.toFixed(2);
     } catch (e) {
-        alert("計算錯誤");
-        calcClear();
+        display.value = "Error";
+        setTimeout(calcClear, 1000);
+    }
+}
+
+// --- 2. 鍵盤支援與千分位邏輯 ---
+document.addEventListener('keydown', function(e) {
+    // 只有當計算機顯示時才監聽
+    if (document.getElementById('calculator').style.display === 'block') {
+        if (/[0-9\+\-\*\/\.]/.test(e.key)) calcAppend(e.key);
+        if (e.key === 'Enter') calcCalculate();
+        if (e.key === 'Backspace') calcBackspace();
+        if (e.key === 'Escape') calcClear();
+    }
+});
+
+// 金額千分位格式化（補強現有邏輯）
+function formatNumber(num) {
+    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// --- 3. 拖曳邏輯 ---
+dragElement(document.getElementById("calculator"));
+
+function dragElement(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    const header = document.getElementById("calcHeader");
+    if (header) {
+        header.onmousedown = dragMouseDown;
+    }
+
+    function dragMouseDown(e) {
+        e.preventDefault();
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        document.onmouseup = closeDragElement;
+        document.onmousemove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e.preventDefault();
+        pos1 = pos3 - e.clientX;
+        pos2 = pos4 - e.clientY;
+        pos3 = e.clientX;
+        pos4 = e.clientY;
+        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.onmousemove = null;
     }
 }
