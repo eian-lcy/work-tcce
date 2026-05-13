@@ -258,6 +258,19 @@ function handleEnter(event) {
     }
 }
 
+document.addEventListener('keydown', function(event) {
+    // 檢查是否按下 Alt + Enter
+    if (event.altKey && event.key === 'Enter') {
+        // 防止 Enter 鍵在 textarea 或表單中觸發預設的換行或提交動作
+        event.preventDefault(); 
+        
+        console.log("偵測到 Alt + Enter！");
+        
+        // 呼叫函式
+        saveCurrentBatch();
+    }
+});
+
 function addRow(nameVal = "", amtVal = "", scanVal = "") {
     const container = document.getElementById('dynamicRows');
     const div = document.createElement('div');
