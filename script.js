@@ -1013,3 +1013,40 @@ function dragElement(elmnt) {
         document.onmousemove = null;
     }
 }
+
+// 處理算式輸入
+function handleCalculation(input) {
+    let val = input.value.trim();
+    if (val.startsWith('=')) {
+        try {
+            // 移除 '=' 並計算剩下的數學表達式
+            const expression = val.substring(1);
+            // 僅允許數字與運算符號，防止惡意代碼
+            if (/^[0-9+\-*/().\s]+$/.test(expression)) {
+                input.value = new Function(`return ${expression}`)();
+            }
+        } catch (e) {
+            console.error("算式格式錯誤");
+        }
+    }
+    updateTotals(); // 計算完後更新上方小計
+}
+
+// 更新小計的功能
+function updateTotals() {
+    let amountSum = 0;
+    let scanSum = 0;
+
+    // 取得所有金額輸入框 (假設 class 為 .amount-input)
+    document.querySelectorAll('.amount-input').forEach(el => {
+        amountSum += parseFloat(el.value) || 0;
+    });
+
+    // 取得所有掃描輸入框 (假設 class 為 .scan-input)
+    document.querySelectorAll('.scan-input').forEach(el => {
+        scanSum += parseFloat(el.value) || 0;
+    });
+
+    document.getElementById('totalAmount').value = amountSum;
+    document.getElementById('totalScan').value = scanSum;
+}
