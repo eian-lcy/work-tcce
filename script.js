@@ -287,6 +287,32 @@ function addRow(nameVal = "", amtVal = "", scanVal = "") {
     container.appendChild(div);
 }
 
+function calculateTotal() {
+    let total = 0;
+    // 選取所有的金額與掃描費欄位
+    const inputs = document.querySelectorAll('.payee-amount, .payee-scan');
+    
+    inputs.forEach(input => {
+        let val = input.value;
+        
+        // 如果使用者輸入以 = 開頭，嘗試計算結果 (簡單實作)
+        if (val.startsWith('=')) {
+            try {
+                // 去掉 = 號並計算剩下的算式，例如 =100+200
+                val = eval(val.substring(1)); 
+            } catch (e) {
+                val = 0;
+            }
+        }
+        
+        total += parseFloat(val) || 0;
+    });
+
+    // 將總額顯示在對應的 UI 位置（假設您的總額 ID 是 total-amount）
+    const display = document.getElementById('total-amount');
+    if (display) display.innerText = total.toLocaleString(); 
+}
+
 function removeRow(btn) {
     const row = btn.parentNode;
     const container = document.getElementById('dynamicRows');
