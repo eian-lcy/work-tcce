@@ -278,8 +278,10 @@ function addRow(nameVal = "", amtVal = "", scanVal = "") {
     div.innerHTML = `
 <input type="text" placeholder="撥款人姓名" class="payee-name" value="${nameVal}" 
        onblur="autoExpandPayee(this)" oncontextmenu="showContextMenu(event, this)">
-<input type="number" placeholder="金額" class="payee-amount" value="${amtVal}" onkeydown="handleEnter(event)">
-<input type="number" placeholder="掃描費" class="payee-scan" value="${scanVal}" onkeydown="handleEnter(event)">
+<input type="number" placeholder="金額" class="payee-amount" value="${amtVal}" 
+       oninput="calculateTotal()" onkeydown="handleEnter(event)">
+<input type="number" placeholder="掃描費" class="payee-scan" value="${scanVal}" 
+       oninput="calculateTotal()" onkeydown="handleEnter(event)">
 <button type="button" class="btn-delete" onclick="removeRow(this)">刪除</button>
 `;
     container.appendChild(div);
