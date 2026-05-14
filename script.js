@@ -792,9 +792,14 @@ function updateGrandTotal() {
 }
 
 function recalculateAll() {
+    // document.querySelectorAll('.amount-input').forEach(input => {
+    //     calculateRow(input);
+    // });
     document.querySelectorAll('.amount-input').forEach(input => {
-        calculateRow(input);
+    input.addEventListener('input', () => {
+        updateTotals(); // 每次輸入都觸發重新計算
     });
+});
 }
 
 function goBack() {
@@ -1034,19 +1039,9 @@ function handleCalculation(input) {
 
 // 更新小計的功能
 function updateTotals() {
-    let amountSum = 0;
-    let scanSum = 0;
-
-    // 取得所有金額輸入框 (假設 class 為 .amount-input)
-    document.querySelectorAll('.amount-input').forEach(el => {
-        amountSum += parseFloat(el.value) || 0;
+    let total = 0;
+    document.querySelectorAll('.amount-input').forEach(input => {
+        total += Number(input.value) || 0;
     });
-
-    // 取得所有掃描輸入框 (假設 class 為 .scan-input)
-    document.querySelectorAll('.scan-input').forEach(el => {
-        scanSum += parseFloat(el.value) || 0;
-    });
-
-    document.getElementById('totalAmount').value = amountSum;
-    document.getElementById('totalScan').value = scanSum;
+    document.getElementById('total-display').innerText = total;
 }
