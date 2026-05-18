@@ -1073,3 +1073,55 @@ function updateTotals() {
     });
     document.getElementById('total-display').innerText = total;
 }
+
+function updateAllTotals() {
+    let grandTotal = 0;
+
+    // 取得所有金額欄位與掃描費欄位
+    const amountInputs = document.querySelectorAll('.payee-amount');
+    const scanInputs = document.querySelectorAll('.payee-scan');
+
+    // 定義一個處理公式的內部函式
+    const parseValue = (input) => {
+        let rawValue = input.value.trim();
+        if (!rawValue) return 0;
+
+        // 如果以 = 開頭，嘗試計算
+        if (rawValue.startsWith('=')) {
+            try {
+                // 移除 = 並計算結果 (例如 =500+20)
+                // 為了安全與方便，使用簡單的 Function constructor 替代 eval
+                const result = new Function(`return ${rawValue.substring(1)}`)();
+                return parseFloat(result) || 0;
+            } catch (e) {
+                return 0; // 公式錯誤時暫不處理
+            }
+        }
+        return parseFloat(rawValue) || 0;
+    };
+
+    // 加總金額
+    amountInputs.forEach(input => grandTotal += parseValue(input));
+    // 加總掃描費
+    scanInputs.forEach(input => grandTotal += parseValue(input));
+
+    // 更新到頁面上的總額欄位 (請確認你總額顯示區域的 ID 是什麼，這裡假設是 totalAmount)
+    const totalDisplay = document.getElementById('totalAmount');
+    if (totalDisplay) {
+        totalDisplay.innerText = grandTotal.toLocaleString(); // 加上千分位
+    }
+}
+// 監聽整個表格，利用事件代理 (Event Delegation)
+document.getElementById('table-body-id').addEventListener('blur', function(e) {
+    if (e.target.classList.contains('payee-amount') || e.target.classList.contains('payee-scan')) {
+        let val = e.target.value;
+        if (val.startsWith('=')) {
+            try {
+                e.target.value = new Function(`return ${val.substring(1)}`)();
+                updateAllTotals(); // 再次確保總額同步
+            } catch (err) {
+                console.error("公式格式錯誤");
+            }
+        }
+    }
+}, true); // 使用 Capture 階段監聽 blur
