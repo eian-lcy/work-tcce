@@ -289,28 +289,49 @@ function addRow(nameVal = "", amtVal = "", scanVal = "") {
 
 function calculateTotal() {
     let total = 0;
-    // 選取所有的金額與掃描費欄位
-    const inputs = document.querySelectorAll('.payee-amount, .payee-scan');
     
-    inputs.forEach(input => {
-        let val = input.value;
+    // 1. 抓取所有的金額和掃描費輸入框
+    const amtInputs = document.querySelectorAll('.payee-amount');
+    const scanInputs = document.querySelectorAll('.payee-scan');
+    
+    // 合併成一個陣列一起處理
+    const allInputs = [...amtInputs, ...scanInputs];
+    
+    allInputs.forEach(input => {
+        let val = input.value.trim(); // 去除前後空白
         
-        // 如果使用者輸入以 = 開頭，嘗試計算結果 (簡單實作)
+        if (!val) return; // 沒輸入就跳過
+        
+        // 2. 核心：如果發現是以 = 開頭
         if (val.startsWith('=')) {
             try {
-                // 去掉 = 號並計算剩下的算式，例如 =100+200
-                val = eval(val.substring(1)); 
+                // 移除第一個字元（也就是 =），只留下後面的算式
+                const formula = val.substring(1); 
+                
+                // 使用 Function 代替 eval，更安全地計算 "100+200-50" 這樣的字串
+                const calculatedValue = new Function(`return ${formula}`)();
+                
+                // 確認計算出來的是不是一個有效的數字
+                if (!isNaN(calculatedValue) && isFinite(calculatedValue)) {
+                    total += parseFloat(calculatedValue);
+                }
             } catch (e) {
-                val = 0;
+                // 如果公式還沒打完（例如剛打完 "=100+"），會進到這裡，先忽略不計
+                console.log("公式計算中或格式有誤...");
             }
+        } else {
+            // 3. 如果是一般數字，正常轉換
+            total += parseFloat(val) || 0;
         }
-        
-        total += parseFloat(val) || 0;
     });
-
-    // 將總額顯示在對應的 UI 位置（假設您的總額 ID 是 total-amount）
-    const display = document.getElementById('total-amount');
-    if (display) display.innerText = total.toLocaleString(); 
+    
+    // 4. 將總額寫入你的總計欄位
+    // 請根據你網頁實際顯示總額的標籤 ID（例如 id="total-price"）來修改下面這行
+    const totalDisplay = document.getElementById('你的總額顯示欄位ID'); 
+    if (totalDisplay) {
+        totalDisplay.innerText = total; 
+        // 如果是要寫入 input 欄位，請用 totalDisplay.value = total;
+    }
 }
 
 function removeRow(btn) {
@@ -1111,17 +1132,24 @@ function updateAllTotals() {
         totalDisplay.innerText = grandTotal.toLocaleString(); // 加上千分位
     }
 }
-// 監聽整個表格，利用事件代理 (Event Delegation)
-document.getElementById('table-body-id').addEventListener('blur', function(e) {
+// 監聽整個網頁的失焦事件
+document.addEventListener('blur', function (e) {
+    // 判斷是不是金額或掃描費欄位
     if (e.target.classList.contains('payee-amount') || e.target.classList.contains('payee-scan')) {
-        let val = e.target.value;
+        let val = e.target.value.trim();
+        
         if (val.startsWith('=')) {
             try {
-                e.target.value = new Function(`return ${val.substring(1)}`)();
-                updateAllTotals(); // 再次確保總額同步
+                const formula = val.substring(1);
+                const result = new Function(`return ${formula}`)();
+                
+                if (!isNaN(result) && isFinite(result)) {
+                    e.target.value = result; // 把欄位內容直接變成計算結果
+                    calculateTotal(); // 重新觸發總計更新
+                }
             } catch (err) {
-                console.error("公式格式錯誤");
+                // 公式未完成或錯誤時不處理
             }
         }
     }
-}, true); // 使用 Capture 階段監聽 blur
+}, true); // 使用捕獲階段以監聽 blur 事件
