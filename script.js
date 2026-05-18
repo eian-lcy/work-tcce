@@ -291,45 +291,43 @@ function calculateTotal() {
     let amountTotal = 0; // 金額總計
     let scanTotal = 0;   // 掃描總計
 
-    // 1. 抓取所有動態產生的輸入框
+    // 抓取畫面上所有的金額與掃描費輸入框
     const amtInputs = document.querySelectorAll('.payee-amount');
     const scanInputs = document.querySelectorAll('.payee-scan');
 
-    // 2. 定義一個「解析公式與數字」的防呆小工具
-    const parseInput = (input) => {
+    // 解析輸入內容的防呆小工具
+    const parseValue = (input) => {
         let val = input.value.trim();
         if (!val) return 0;
 
-        // 如果開頭是 =，拆掉它並計算
+        // 如果發現是以 = 開頭，嘗試拆掉並計算公式
         if (val.startsWith('=')) {
             try {
                 const formula = val.substring(1);
-                // 使用 new Function 計算算式 (如 100+200)
+                // 使用 new Function 安全地計算 "100+200" 這樣的算式
                 const result = new Function(`return ${formula}`)();
                 return (!isNaN(result) && isFinite(result)) ? parseFloat(result) : 0;
             } catch (e) {
-                return 0; // 公式未打完或錯誤時先當 0
+                return 0; // 公式未打完或格式錯誤時先當 0，不卡死程式
             }
         }
         return parseFloat(val) || 0; // 一般數字正常轉換
     };
 
-    // 3. 分別計算「金額」與「掃描費」的總和
-    amtInputs.forEach(input => amountTotal += parseInput(input));
-    scanInputs.forEach(input => scanTotal += parseInput(input));
+    // 分別累加金額與掃描費
+    amtInputs.forEach(input => amountTotal += parseValue(input));
+    scanInputs.forEach(input => scanTotal += parseValue(input));
 
-    // 4. 【核心關鍵】把算好的數字塞回網頁畫面的「總計區塊」
-    const amountDisplay = document.getElementById('totalAmount'); 
-    const scanDisplay = document.getElementById('totalScan');
+    // 將計算結果即時寫入網頁對應的 <span> 區塊
+    const totalAmountDisplay = document.getElementById('totalAmount');
+    const totalScanDisplay = document.getElementById('totalScan');
 
-    if (amountDisplay) {
-        amountDisplay.innerText = amountTotal.toLocaleString(); // 加上千分位，如 1,000
+    if (totalAmountDisplay) {
+        totalAmountDisplay.innerText = amountTotal.toLocaleString(); // 加上千分位
     }
-    if (scanDisplay) {
-        scanDisplay.innerText = scanTotal.toLocaleString();
+    if (totalScanDisplay) {
+        totalScanDisplay.innerText = scanTotal.toLocaleString(); // 加上千分位
     }
-
-}
 }
 
 function removeRow(btn) {
@@ -1139,12 +1137,12 @@ document.addEventListener('blur', function (e) {
                 const formula = val.substring(1);
                 const result = new Function(`return ${formula}`)();
                 if (!isNaN(result) && isFinite(result)) {
-                    e.target.value = result; // 欄位字串變成計算結果
-                    calculateTotal();        // 強制重新整理上方總計
+                    e.target.value = result; // 欄位直接顯示計算結果
+                    calculateTotal();        // 再次確保總額同步更新
                 }
             } catch (err) {
-                // 公式未打完不處理
+                // 公式不完整則不處理
             }
         }
     }
-}, true);
+}, true); // 使用 Capture 階段以正確監聽 blur 事件
