@@ -455,6 +455,7 @@ function clearInputs() {
     document.getElementById('caseNoInput').value = '';
     document.getElementById('extraNoteInput').value = '';
     document.getElementById('usagePreview').value = '';
+    document.getElementById('deptInput').value = '';
 
     const container = document.getElementById('dynamicRows');
     container.innerHTML = '';
