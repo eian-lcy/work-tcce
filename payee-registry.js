@@ -1,4 +1,7 @@
 // payee-registry.js
+const SUPABASE_URL = 'https://eudnzrhqolvyijmgpjbz.supabase.co/rest/v1/';
+const SUPABASE_ANON_KEY = 'sb_publishable_r92k3Hbr-MGm_AugHi6SuQ_HFwUyLba';
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ★★★ 受款人簡稱對照表 (請在此新增) ★★★
 const rawPayeeRegistry = {
