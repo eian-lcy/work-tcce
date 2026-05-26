@@ -449,13 +449,21 @@ function saveCurrentBatch() {
 
     renderSavedList();
     clearInputs();
+
+    const deptField = document.getElementById('deptInput');
+    if (deptField) {
+        deptField.value = '';
+        // 如果你的「用途預覽」是根據申請單位連動的，需要觸發這一行：
+        if (typeof updateUsagePreview === 'function') {
+            updateUsagePreview();
+        }
+    }
 }
 
 function clearInputs() {
     document.getElementById('caseNoInput').value = '';
     document.getElementById('extraNoteInput').value = '';
     document.getElementById('usagePreview').value = '';
-    document.getElementById('deptInput').value = '';
 
     const container = document.getElementById('dynamicRows');
     container.innerHTML = '';
