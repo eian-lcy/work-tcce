@@ -22,18 +22,13 @@ body {
 }
 
 .container {
+    background: white;
     width: 100%;
     max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 15px;
-    box-sizing: border-box;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     position: relative;
-}
-
-/* 圖片與輸入框防溢出 */
-input, select, textarea {
-    max-width: 100%;
-    box-sizing: border-box;
 }
 
 h2 {
@@ -44,373 +39,279 @@ h2 {
 }
 
 /* ========================================================
-   核心版面佈局（手機優先：預設全螢幕寬度、垂直堆疊）
+   💻 電腦版排版（完全保留你原本喜歡的樣子）
    ======================================================== */
 .part1 {
     display: flex;
-    flex-direction: column; /* 手機端一律由上往下排 */
-    gap: 20px;
+    flex-direction: row;
+    justify-content: space-between;
 }
 
 .part1-left {
-    width: 100%; /* 手機端拿滿寬度 */
+    width: 35%;
     display: flex;
     flex-direction: column;
-    padding: 15px;
-    background-color: #f9f9f9;
-    border-radius: 8px;
 }
 
 .part1-right {
-    width: 100%; /* 手機端拿滿寬度 */
+    width: 65%;
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    padding-left: 20px;
 }
 
-/* --- 當螢幕寬度大於 768px（電腦/平板）時，才恢復左右並排 --- */
-@media (min-width: 768px) {
-    .part1 {
-        flex-direction: row;
-    }
-    .part1-left {
-        width: 35%; /* 電腦端分配比例 */
-    }
-    .part1-right {
-        width: 65%; /* 電腦端分配比例 */
-    }
-}
-
-/* --- 左側表單欄位優化 --- */
 .part1 p {
     display: flex;
-    flex-direction: column; /* 手機端：標題在上、輸入框在下 */
-    align-items: flex-start;
+    flex-direction: row;
+    align-items: center;
     margin-bottom: 15px;
-    width: 100%;
 }
 
 .p1-font-w {
-    width: 100%;
-    margin-bottom: 5px;
-    font-weight: bold;
+    width: 100px;
+    text-align: justify;
+    text-align-last: justify;
+    margin-right: 10px;
 }
 
-input[type="date"],
-.p1-in1,
-.p1-in2,
-.p1-in3,
-.datechooser select {
-    padding: 8px;
-    font-size: 16px; /* 防止 iOS 自動放大 */
+input[type="date"], .p1-in1, .p1-in2, .p1-in3, .datechooser select {
+    flex: 1;
+    padding: 5px;
+    font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    height: 45px;
-    width: 100% !important; /* 確保輸入框填滿 */
-    flex: none;
 }
 
-/* --- 當螢幕大於 480px 時，左側表單恢復橫向排列 --- */
-@media (min-width: 480px) {
-    .part1 p {
-        flex-direction: row;
-        align-items: center;
-    }
-    .p1-font-w {
-        width: 100px;
-        margin-right: 10px;
-        margin-bottom: 0;
-        text-align: justify;
-        text-align-last: justify;
-    }
-    input[type="date"], .p1-in1, .p1-in2, .p1-in3 {
-        flex: 1;
-    }
-}
-
-/* ========================================================
-   動態輸入列 (姓名、金額、掃描費) 響應式優化
-   ======================================================== */
-.list-header {
+/* 電腦版表格分配比例 */
+.list-header, .row-inputs {
     display: flex;
     gap: 10px;
     width: 100%;
     align-items: center;
-    padding-left: 9px;
-    box-sizing: border-box;
 }
-
-.row-inputs {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 10px;
-    align-items: center;
-    width: 100%;
-}
-
 .row-inputs input {
-    padding: 8px;
+    padding: 5px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    min-height: 40px;
-    font-size: 16px;
 }
+.list-header span:nth-child(1), .row-inputs input.payee-name { flex: 4 !important; }
+.list-header span:nth-child(2), .row-inputs input.payee-amount { flex: 2.5 !important; }
+.list-header span:nth-child(3), .row-inputs input.payee-scan { flex: 2.5 !important; }
+.list-header span:nth-child(4), .btn-delete { flex: 0 0 60px !important; width: 60px !important; }
 
-/* 預設比例分配（適用於大螢幕） */
-.list-header span:nth-child(1),
-.row-inputs input.payee-name {
-    flex: 4 !important;
-    min-width: 0;
-}
-
-.list-header span:nth-child(2),
-.row-inputs input.payee-amount {
-    flex: 2.5 !important;
-    min-width: 0;
-}
-
-.list-header span:nth-child(3),
-.row-inputs input.payee-scan {
-    flex: 2.5 !important;
-    min-width: 0;
-}
-
-.list-header span:nth-child(4),
-.btn-delete {
-    flex: 0 0 60px !important;
-    width: 60px !important;
-}
-
-/* 顯示與隱藏掃描費 */
 .scan-field-header { display: none; }
 .show-scan .scan-field-header { display: block !important; }
 .row-inputs input.payee-scan { display: none; }
 .show-scan .payee-scan { display: block !important; }
 
-/* --- 手機端特化：當螢幕小於 600px 時，動態輸入列轉為卡片式排列 --- */
-@media (max-width: 600px) {
-    .list-header {
-        display: none; /* 隱藏橫向表頭 */
-    }
-    
-    .row-inputs {
-        flex-direction: column; /* 改為垂直卡片 */
-        align-items: stretch;
-        background: #fff;
-        border: 1px solid #e0e0e0;
-        border-radius: 8px;
-        padding: 12px;
-        gap: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        position: relative;
-    }
-
-    .row-inputs input.payee-name,
-    .row-inputs input.payee-amount,
-    .row-inputs input.payee-scan {
-        flex: none !important;
-        width: 100% !important;
-    }
-
-    /* 使用偽元素在輸入框前提示欄位名稱 */
-    .row-inputs input.payee-name::placeholder { color: #888; }
-    
-    .btn-delete {
-        width: 100% !important;
-        flex: none !important;
-        margin-top: 5px;
-    }
-}
-
-/* ========================================================
-   按鈕與操作區優化
-   ======================================================== */
 button {
-    padding: 8px 15px;
-    border: none;
+    padding: 5px 10px;
+    border: 1px solid #ccc;
     border-radius: 4px;
+    background-color: #f9f9f9;
     cursor: pointer;
-    font-size: 15px;
-    transition: 0.3s;
 }
-
 .btn-add-row {
-    background-color: var(--accent-color);
-    border: 1px solid var(--accent-color);
-    color: white;
-    margin-bottom: 20px;
+    margin-top: 10px;
     width: 100%;
-    font-weight: bold;
-    font-size: 16px;
-    padding: 12px;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 8px;
 }
-
-.btn-add-row:hover {
-    background-color: white;
-    color: var(--accent-color);
-}
-
-/* 底部操作按鈕區（加入暫存、前往結算） */
 .action-buttons {
     display: flex;
-    flex-direction: column; /* 手機端上下堆疊，避免擠壓 */
-    gap: 12px;
+    flex-direction: row;
+    gap: 10px;
     margin-top: 20px;
-    border-top: 1px solid #eee;
-    padding-top: 20px;
-    width: 100%;
 }
-
 .btn-save-batch, .btn-submit, .btn-back, .btn-excel {
-    width: 100% !important;
-    height: 45px !important;
-    font-weight: bold;
+    flex: 1;
+    padding: 10px;
     font-size: 16px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-weight: bold;
+}
+.btn-top-right {
+    position: absolute;
+    top: 30px;
+    right: 30px;
 }
 
-.btn-save-batch { background-color: var(--accent-color); color: white; }
-.btn-submit { background-color: var(--accent-color); color: white; }
-.btn-back { background-color: var(--primary-color); color: white; }
-.btn-excel { background-color: #217346; color: white; }
+/* ========================================================
+   📱 專屬手機版全新設計（螢幕寬度 < 768px）
+   ======================================================== */
+@media (max-width: 767px) {
+    body {
+        padding: 8px;
+        background-color: #f4f6f8; /* 讓手機版背景更有現代層次感 */
+    }
+    
+    .container {
+        padding: 16px;
+        box-shadow: none;
+        border-radius: 12px;
+    }
 
-/* --- 電腦端按鈕改回橫向並排 --- */
-@media (min-width: 768px) {
+    /* 頂部快速工具列 RWD 改為並排美化按鈕 */
+    .btn-top-right {
+        position: static;
+        display: inline-block;
+        width: 48%;
+        margin-bottom: 15px;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+        background-color: #fff;
+        border: 1px solid #dcdfe6;
+        border-radius: 6px;
+    }
+    .btn-top-right:nth-of-type(2) {
+        float: right;
+    }
+
+    /* 左右結構拆解 */
+    .part1 {
+        flex-direction: column;
+        gap: 25px;
+    }
+    .part1-left, .part1-right {
+        width: 100%;
+        padding-left: 0;
+    }
+
+    /* --- 左側案件資料：精緻化表單設計 --- */
+    .part1-left {
+        background-color: #fff;
+        border: 1px solid #e4e7ed;
+        border-radius: 10px;
+        padding: 16px;
+    }
+    .part1 p {
+        flex-direction: column;
+        align-items: stretch;
+        margin-bottom: 16px;
+    }
+    .p1-font-w {
+        width: 100%;
+        margin-bottom: 6px;
+        text-align: left !important;
+        font-size: 14px;
+        color: #606266;
+    }
+    
+    /* 大幅提升手機點擊的舒適度 */
+    input[type="date"], .p1-in1, .p1-in2, .p1-in3, .datechooser select {
+        width: 100% !important;
+        height: 44px;
+        font-size: 16px; /* 關鍵：>16px 可防止 iOS 點擊時畫面自動縮放放大 */
+        padding: 10px 12px;
+        border: 1px solid #dcdfe6;
+        border-radius: 6px;
+        background-color: #fff;
+    }
+
+    /* --- 右側撥款人：全新卡片式設計 (Card UI) --- */
+    .list-header {
+        display: none; /* 移除凌亂的傳統橫向表頭 */
+    }
+
+    .row-inputs {
+        flex-direction: column;
+        align-items: stretch;
+        background: #ffffff;
+        border: 1px solid #e4e7ed;
+        border-left: 4px solid var(--accent-color); /* 左側點綴強調色條 */
+        border-radius: 8px;
+        padding: 16px;
+        gap: 12px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    /* 模擬精美表單標籤，讓輸入框內有獨立小標題 */
+    .row-inputs input {
+        width: 100% !important;
+        height: 42px;
+        font-size: 15px;
+        padding: 8px 12px;
+        border: 1px solid #dcdfe6;
+        border-radius: 6px;
+        background-color: #fafafa;
+    }
+    
+    /* 手機端專用偽欄位提示 (透過 placeholder 視覺優化) */
+    .row-inputs input.payee-name::placeholder { color: #909399; content: "受款人姓名"; }
+
+    /* 刪除按鈕改為右下角精緻小按鈕，或滿版醒目紅鈕 */
+    .btn-delete {
+        width: 100% !important;
+        height: 38px;
+        background-color: #fff0f0 !important;
+        color: #f56c6c !important;
+        border: 1px solid #fde2e2 !important;
+        border-radius: 6px;
+        font-weight: bold;
+        margin-top: 4px;
+    }
+    .btn-delete:hover { background-color: #f56c6c !important; color: #fff !important; }
+
+    /* 「+ 增加此案撥款人」按鈕視覺放大，更易點擊 */
+    .btn-add-row {
+        height: 48px;
+        border-radius: 8px;
+        font-size: 16px;
+        box-shadow: 0 4px 10px rgba(41, 128, 185, 0.2);
+    }
+
+    /* --- 底部操作區（大卡片滿版） --- */
     .action-buttons {
-        flex-direction: row;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 25px;
+        border-top: 2px dashed #e4e7ed;
+        padding-top: 20px;
     }
     .btn-save-batch, .btn-submit, .btn-back, .btn-excel {
-        flex: 1;
-        width: auto !important;
+        width: 100% !important;
+        height: 50px !important;
+        border-radius: 8px;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-}
 
-/* --- 頂部右上角按鈕 RWD --- */
-.btn-top-right {
-    position: static; /* 手機端不懸浮，隨內容排列 */
-    display: block;
-    width: 100%;
-    margin-bottom: 10px;
-    text-align: center;
-    background-color: white;
-    color: var(--accent-color);
-    font-weight: bold;
-    padding: 10px 15px;
-    border-radius: 20px;
-    border: 1px solid var(--accent-color);
-}
-
-@media (min-width: 768px) {
-    .btn-top-right {
-        position: absolute;
-        top: 20px;
-        right: 30px;
-        width: auto;
-        margin-bottom: 0;
+    /* --- 彈出視窗與計算機在手機版改為高度自適應大視窗 --- */
+    .modal-content {
+        width: 95%;
+        margin: 20% auto;
+        border-radius: 16px;
+    }
+    .floating-calc {
+        width: 92%;
+        right: 4%;
+        left: 4%;
+        top: 15%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
     }
 }
 
 /* ========================================================
-   表格與彈窗優化
+   其餘通用報表及工具樣式（保留原樣）
    ======================================================== */
-.table-responsive-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    margin-bottom: 15px;
-}
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 10px;
-}
-
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    vertical-align: middle;
-}
-
-th {
-    background-color: var(--primary-color);
-    color: white;
-    text-align: center;
-}
-
-/* 彈出視窗 (Modal) */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 2000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(2px);
-}
-
-.modal-content {
-    background-color: #fefefe;
-    width: 90%;
-    max-width: 500px;
-    margin: 10% auto;
-    border-radius: 12px;
-    padding: 0;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-    overflow: hidden;
-}
-
-.modal-header {
-    padding: 15px 20px;
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.modal-body {
-    padding: 20px;
-    max-height: 70vh;
-    overflow-y: auto;
-}
-
-/* 計算機按鍵網格 */
-.calculator-keys {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-}
-
-@media (max-width: 480px) {
-    .calculator-keys button {
-        padding: 15px 0;
-        font-size: 18px;
-    }
-}
-
-/* 計算機浮動容器限制（避免手機超出螢幕） */
-.floating-calc {
-    display: none;
-    position: fixed;
-    top: 50px;
-    right: 10px;
-    width: 280px;
-    max-width: calc(100vw - 20px);
-    background: white;
-    border: 1px solid #ccc;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    border-radius: 8px;
-    z-index: 3000;
-}
-
-/* 其他既有樣式保留... */
+.table-responsive-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: middle; }
+th { background-color: var(--primary-color); color: white; text-align: center; }
+.registry-table { width: 100%; border-collapse: collapse; }
+.registry-table th, .registry-table td { padding: 10px; border-bottom: 1px solid #ddd; }
+.registry-table th { background-color: #f2f2f2; color: #333; font-weight: bold; }
+.registry-table tr:hover { background-color: #f9f9f9; }
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
+.modal-header { padding: 15px 20px; background-color: var(--primary-color); color: white; display: flex; justify-content: space-between; align-items: center; }
+.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+.calc-header { padding: 10px; background: #2c3e50; color: white; display: flex; justify-content: space-between; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+.calc-body { padding: 10px; }
 .amount-input { text-align: right; }
 .check-cell { display: flex; align-items: center; justify-content: space-between; padding: 0 5px; height: 100%; }
 .val-tax, .val-health { text-align: right; flex: 1; }
@@ -421,7 +322,4 @@ input[type=number] { -moz-appearance: textfield; }
 .context-menu { display: none; position: absolute; z-index: 1000; width: 180px; background-color: #fff; border: 1px solid #ccc; padding: 5px 0; }
 .menu-item { padding: 8px 15px; cursor: pointer; font-size: 14px; color: #333; }
 .menu-item:hover { background-color: #f0f0f0; }
-
-@media print {
-    .btn-back, .btn-submit, .btn-save-batch, .btn-add-row, .btn-delete, .report-controls, .btn-excel, .btn-edit-item, .btn-delete-item, .btn-mini-edit { display: none; }
-}
+@media print { .btn-back, .btn-submit, .btn-save-batch, .btn-add-row, .btn-delete, .report-controls, .btn-excel, .btn-edit-item, .btn-delete-item, .btn-mini-edit { display: none; } }
