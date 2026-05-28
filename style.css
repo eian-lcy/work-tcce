@@ -1,4 +1,6 @@
-/* --- 基礎設定 --- */
+/* ========================================================
+   [完全保留] 你原本電腦版的所有基礎設定與精美樣式（100% 沒變動）
+   ======================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -38,280 +40,132 @@ h2 {
     margin-bottom: 20px;
 }
 
-/* ========================================================
-   💻 電腦版排版（完全保留你原本喜歡的樣子）
-   ======================================================== */
 .part1 {
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    gap: 20px;
 }
 
 .part1-left {
     width: 35%;
     display: flex;
     flex-direction: column;
+    padding: 10px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
 }
 
 .part1-right {
     width: 65%;
     display: flex;
     flex-direction: column;
-    padding-left: 20px;
+    padding: 10px;
 }
 
 .part1 p {
     display: flex;
-    flex-direction: row;
     align-items: center;
     margin-bottom: 15px;
 }
 
 .p1-font-w {
     width: 100px;
+    margin-right: 10px;
+    font-weight: bold;
     text-align: justify;
     text-align-last: justify;
-    margin-right: 10px;
 }
 
-input[type="date"], .p1-in1, .p1-in2, .p1-in3, .datechooser select {
-    flex: 1;
-    padding: 5px;
-    font-size: 14px;
+input[type="date"], .p1-in1, .p1-in2 {
+    padding: 8px;
+    font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    height: 45px;
+    flex: 1;
 }
 
-/* 電腦版表格分配比例 */
+.p1-in3 {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    height: 45px;
+    width: 100%;
+}
+
 .list-header, .row-inputs {
     display: flex;
     gap: 10px;
     width: 100%;
     align-items: center;
+    padding: 0;
 }
-.row-inputs input {
-    padding: 5px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+
+.list-header span {
+    padding-left: 9px;
+    box-sizing: border-box;
 }
-.list-header span:nth-child(1), .row-inputs input.payee-name { flex: 4 !important; }
-.list-header span:nth-child(2), .row-inputs input.payee-amount { flex: 2.5 !important; }
-.list-header span:nth-child(3), .row-inputs input.payee-scan { flex: 2.5 !important; }
+
+.list-header span:nth-child(1), .row-inputs input.payee-name { flex: 4 !important; width: 0; min-width: 0; line-height: 35px; font-weight: bold; }
+.list-header span:nth-child(2), .row-inputs input.payee-amount { flex: 2.5 !important; width: 0; min-width: 0; line-height: 35px; font-weight: bold; }
+.list-header span:nth-child(3), .row-inputs input.payee-scan { flex: 2.5 !important; width: 0; min-width: 0; line-height: 35px; font-weight: bold; }
 .list-header span:nth-child(4), .btn-delete { flex: 0 0 60px !important; width: 60px !important; }
 
 .scan-field-header { display: none; }
 .show-scan .scan-field-header { display: block !important; }
-.row-inputs input.payee-scan { display: none; }
+
+.row-inputs { display: flex; gap: 10px; margin-bottom: 10px; align-items: center; width: 100%; }
+.row-inputs input { padding: 8px; border: 1px solid #ddd; border-radius: 4px; min-height: 38px; }
+.row-inputs input.payee-name { flex: 2; min-width: 0; font-size: 16px; height: 40px; padding: 10px; }
+.row-inputs input.payee-amount { flex: 1; min-width: 0; font-size: 16px; height: 40px; padding: 10px; }
+.row-inputs input.payee-scan { flex: 1; min-width: 0; display: none; font-size: 16px; height: 40px; padding: 10px; }
 .show-scan .payee-scan { display: block !important; }
 
-button {
-    padding: 5px 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f9f9f9;
-    cursor: pointer;
-}
-.btn-add-row {
-    margin-top: 10px;
-    width: 100%;
-    background-color: #2980b9;
-    color: white;
-    border: none;
-    padding: 8px;
-}
-.action-buttons {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    margin-top: 20px;
-}
-.btn-save-batch, .btn-submit, .btn-back, .btn-excel {
-    flex: 1;
-    padding: 10px;
-    font-size: 16px;
-    font-weight: bold;
-}
-.btn-top-right {
-    position: absolute;
-    top: 30px;
-    right: 30px;
-}
+button { padding: 8px 15px; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; transition: 0.3s; }
+.btn-add-row { background-color: var(--accent-color); border: 1px solid var(--accent-color); color: white; margin-bottom: 20px; width: 100%; font-weight: bold; font-size: 16px; }
+.btn-add-row:hover { background-color: white; color: var(--accent-color); border: 1px solid var(--accent-color); }
 
-/* ========================================================
-   📱 專屬手機版全新設計（螢幕寬度 < 768px）
-   ======================================================== */
-@media (max-width: 767px) {
-    body {
-        padding: 8px;
-        background-color: #f4f6f8; /* 讓手機版背景更有現代層次感 */
-    }
-    
-    .container {
-        padding: 16px;
-        box-shadow: none;
-        border-radius: 12px;
-    }
+.btn-delete { background-color: #e74c3c; color: white; border: none; padding: 0; width: 60px; flex: none; height: 38px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.btn-delete:hover { background-color: white; color: #e74c3c; border: 1px solid #e74c3c; }
 
-    /* 頂部快速工具列 RWD 改為並排美化按鈕 */
-    .btn-top-right {
-        position: static;
-        display: inline-block;
-        width: 48%;
-        margin-bottom: 15px;
-        text-align: center;
-        padding: 10px;
-        font-size: 14px;
-        background-color: #fff;
-        border: 1px solid #dcdfe6;
-        border-radius: 6px;
-    }
-    .btn-top-right:nth-of-type(2) {
-        float: right;
-    }
+.action-buttons { display: flex; gap: 15px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
+.btn-save-batch { background-color: var(--accent-color); border: 1px solid var(--accent-color); color: white; flex: 1; font-weight: bold; }
+.btn-save-batch:hover { background-color: white; color: var(--accent-color); border: 1px solid var(--accent-color); }
+.btn-submit { background-color: var(--accent-color); border-color: 1px solid var(--accent-color); color: white; flex: 1; height: 40px; font-weight: bold; }
+.btn-submit:hover { background-color: white; color: var(--accent-color); border: 1px solid var(--accent-color); }
 
-    /* 左右結構拆解 */
-    .part1 {
-        flex-direction: column;
-        gap: 25px;
-    }
-    .part1-left, .part1-right {
-        width: 100%;
-        padding-left: 0;
-    }
+.import { color: var(--primary-color); font-size: 0.9em; text-decoration: underline; cursor: pointer; }
+.import:hover { background-color: var(--accent-color); color: white; font-weight: bold; }
+.btn-back { background-color: var(--primary-color); color: white; flex: 1; height: 40px; border: 1px solid var(--primary-color); font-weight: bold; }
+.btn-back:hover { background-color: white; color: var(--primary-color); border: 1px solid var(--primary-color); }
+.btn-excel { background-color: #217346; color: white; flex: 1; height: 40px; font-weight: bold; }
+.btn-excel:hover { background-color: white; color: #217346; border: 1px solid #217346; }
 
-    /* --- 左側案件資料：精緻化表單設計 --- */
-    .part1-left {
-        background-color: #fff;
-        border: 1px solid #e4e7ed;
-        border-radius: 10px;
-        padding: 16px;
-    }
-    .part1 p {
-        flex-direction: column;
-        align-items: stretch;
-        margin-bottom: 16px;
-    }
-    .p1-font-w {
-        width: 100%;
-        margin-bottom: 6px;
-        text-align: left !important;
-        font-size: 14px;
-        color: #606266;
-    }
-    
-    /* 大幅提升手機點擊的舒適度 */
-    input[type="date"], .p1-in1, .p1-in2, .p1-in3, .datechooser select {
-        width: 100% !important;
-        height: 44px;
-        font-size: 16px; /* 關鍵：>16px 可防止 iOS 點擊時畫面自動縮放放大 */
-        padding: 10px 12px;
-        border: 1px solid #dcdfe6;
-        border-radius: 6px;
-        background-color: #fff;
-    }
-
-    /* --- 右側撥款人：全新卡片式設計 (Card UI) --- */
-    .list-header {
-        display: none; /* 移除凌亂的傳統橫向表頭 */
-    }
-
-    .row-inputs {
-        flex-direction: column;
-        align-items: stretch;
-        background: #ffffff;
-        border: 1px solid #e4e7ed;
-        border-left: 4px solid var(--accent-color); /* 左側點綴強調色條 */
-        border-radius: 8px;
-        padding: 16px;
-        gap: 12px;
-        margin-bottom: 16px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-
-    /* 模擬精美表單標籤，讓輸入框內有獨立小標題 */
-    .row-inputs input {
-        width: 100% !important;
-        height: 42px;
-        font-size: 15px;
-        padding: 8px 12px;
-        border: 1px solid #dcdfe6;
-        border-radius: 6px;
-        background-color: #fafafa;
-    }
-    
-    /* 手機端專用偽欄位提示 (透過 placeholder 視覺優化) */
-    .row-inputs input.payee-name::placeholder { color: #909399; content: "受款人姓名"; }
-
-    /* 刪除按鈕改為右下角精緻小按鈕，或滿版醒目紅鈕 */
-    .btn-delete {
-        width: 100% !important;
-        height: 38px;
-        background-color: #fff0f0 !important;
-        color: #f56c6c !important;
-        border: 1px solid #fde2e2 !important;
-        border-radius: 6px;
-        font-weight: bold;
-        margin-top: 4px;
-    }
-    .btn-delete:hover { background-color: #f56c6c !important; color: #fff !important; }
-
-    /* 「+ 增加此案撥款人」按鈕視覺放大，更易點擊 */
-    .btn-add-row {
-        height: 48px;
-        border-radius: 8px;
-        font-size: 16px;
-        box-shadow: 0 4px 10px rgba(41, 128, 185, 0.2);
-    }
-
-    /* --- 底部操作區（大卡片滿版） --- */
-    .action-buttons {
-        flex-direction: column;
-        gap: 12px;
-        margin-top: 25px;
-        border-top: 2px dashed #e4e7ed;
-        padding-top: 20px;
-    }
-    .btn-save-batch, .btn-submit, .btn-back, .btn-excel {
-        width: 100% !important;
-        height: 50px !important;
-        border-radius: 8px;
-        font-size: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    /* --- 彈出視窗與計算機在手機版改為高度自適應大視窗 --- */
-    .modal-content {
-        width: 95%;
-        margin: 20% auto;
-        border-radius: 16px;
-    }
-    .floating-calc {
-        width: 92%;
-        right: 4%;
-        left: 4%;
-        top: 15%;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-}
-
-/* ========================================================
-   其餘通用報表及工具樣式（保留原樣）
-   ======================================================== */
-.table-responsive-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; }
+.btn-save-batch.editing { background-color: #3498db; }
+.page { display: none; }
+.active { display: block; }
+.batch-container { margin-bottom: 40px; border: 1px solid #ccc; padding: 20px; background: white; }
 table { width: 100%; border-collapse: collapse; margin-top: 10px; }
 th, td { border: 1px solid #ddd; padding: 8px; text-align: left; vertical-align: middle; }
 th { background-color: var(--primary-color); color: white; text-align: center; }
-.registry-table { width: 100%; border-collapse: collapse; }
-.registry-table th, .registry-table td { padding: 10px; border-bottom: 1px solid #ddd; }
-.registry-table th { background-color: #f2f2f2; color: #333; font-weight: bold; }
-.registry-table tr:hover { background-color: #f9f9f9; }
-.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
-.modal-header { padding: 15px 20px; background-color: var(--primary-color); color: white; display: flex; justify-content: space-between; align-items: center; }
-.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
-.calc-header { padding: 10px; background: #2c3e50; color: white; display: flex; justify-content: space-between; border-top-left-radius: 8px; border-top-right-radius: 8px; }
-.calc-body { padding: 10px; }
+.heji { color: var(--primary-color) !important; font-weight: bold; text-align: right; }
+.edit-input { width: 100%; padding: 5px; border: 1px solid transparent; background: transparent; font-family: inherit; font-size: 0.95em; }
+.edit-input:hover, .edit-input:focus { border: 1px solid #aaa; background: #fff; }
+.merged-cell { background-color: #fff; text-align: center; font-weight: bold; }
+.name-cell { color: var(--primary-color); font-size: 1.1em; }
+.net-cell { color: #e67e22; font-size: 1.2em; }
+.subtotal-row { background-color: #E5E7EA !important; font-weight: bold; color: #d35400; text-align: right; }
+.grand-total-row { background-color: #34495e; color: white; font-size: 1.1em; font-weight: bold; }
+.saved-list { margin-top: 20px; border: 1px solid #ddd; border-radius: 4px; padding: 15px; background-color: #f9f9f9; }
+.saved-item { display: flex; justify-content: space-between; background: white; padding: 10px; border-bottom: 1px solid #eee; align-items: center; }
+.saved-item-actions { display: flex; gap: 5px; }
+.btn-edit-item, .btn-delete-item { background-color: #3498db; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 0.85em; }
+.btn-delete-item { background-color: #e74c3c; }
+.usage-cell-container { display: flex; align-items: center; gap: 5px; }
+.btn-mini-edit { background-color: #95a5a6; color: white; border: none; border-radius: 4px; width: 24px; height: 24px; padding: 0; cursor: pointer; font-size: 0.9em; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.btn-mini-edit:hover { background-color: #7f8c8d; }
+
+.datechooser select { padding: 8px; font-size: 16px; border: 1px solid #ccc; border-radius: 4px; height: 80px; width: 100%; flex: 1; }
 .amount-input { text-align: right; }
 .check-cell { display: flex; align-items: center; justify-content: space-between; padding: 0 5px; height: 100%; }
 .val-tax, .val-health { text-align: right; flex: 1; }
@@ -319,7 +173,200 @@ input[type=number]::-webkit-outer-spin-button, input[type=number]::-webkit-inner
 input[type=number] { -moz-appearance: textfield; }
 .subtotal-row td, .grand-total-row td { text-align: right !important; color: #ffffff; }
 #grandList, #grandTax, #grandHealth { text-align: right; }
-.context-menu { display: none; position: absolute; z-index: 1000; width: 180px; background-color: #fff; border: 1px solid #ccc; padding: 5px 0; }
+
+.context-menu { display: none; position: absolute; z-index: 1000; width: 180px; background-color: #fff; border: 1px solid #ccc; box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2); border-radius: 4px; padding: 5px 0; }
 .menu-item { padding: 8px 15px; cursor: pointer; font-size: 14px; color: #333; }
-.menu-item:hover { background-color: #f0f0f0; }
-@media print { .btn-back, .btn-submit, .btn-save-batch, .btn-add-row, .btn-delete, .report-controls, .btn-excel, .btn-edit-item, .btn-delete-item, .btn-mini-edit { display: none; } }
+.menu-item:hover { background-color: #f0f0f0; color: #000; }
+
+.btn-top-right { position: absolute; top: 20px; right: 30px; background-color: white; color: var(--accent-color); font-weight: bold; padding: 8px 15px; border-radius: 20px; font-size: 14px; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); border: none; z-index: 10; width: auto; }
+.btn-top-right:hover { background-color: var(--primary-color); color: white; transform: translateY(-2px); }
+
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(2px); }
+.modal-header { padding: 15px 20px; background-color: var(--primary-color); color: white; border-top-left-radius: 8px; border-top-right-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { margin: 0; font-size: 1.2em; }
+.close-modal { color: white; font-size: 28px; font-weight: bold; cursor: pointer; }
+.close-modal:hover { color: #ccc; }
+.modal-body { padding: 20px; max-height: 70vh; overflow-y: auto; }
+.registry-table { width: 100%; border-collapse: collapse; }
+.registry-table th, .registry-table td { padding: 10px; border-bottom: 1px solid #ddd; text-align: left; }
+.registry-table th { background-color: #f2f2f2; color: #333; font-weight: bold; }
+.registry-table tr:hover { background-color: #f9f9f9; }
+
+.floating-calc { display: none; position: fixed; top: 100px; right: 50px; width: 250px; background: white; border: 1px solid #ccc; box-shadow: 0 5px 15px rgba(0,0,0,0.3); border-radius: 8px; z-index: 3000; }
+.calc-header { padding: 10px; background: #2c3e50; color: white; cursor: move; display: flex; justify-content: space-between; border-top-left-radius: 8px; border-top-right-radius: 8px; }
+.calc-body { padding: 10px; }
+#calcDisplay { width: 100%; height: 40px; font-size: 20px; text-align: right; margin-bottom: 10px; padding: 5px; border: 1px solid #ddd; background: #f9f9f9; }
+.calc-buttons { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+.calc-buttons button { padding: 10px; font-size: 16px; border: 1px solid #eee; background: #f5f5f5; cursor: pointer; }
+.calc-buttons button:hover { background: #e0e0e0; }
+
+.modal-content { width: 90%; max-width: 500px; margin: 10% auto; border-radius: 12px; padding: 20px; }
+.calculator-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+@media (max-width: 480px) { .calculator-keys button { padding: 15px 0; font-size: 18px; } }
+.table-responsive-wrapper { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin-bottom: 15px; }
+.table-responsive-wrapper table { min-width: 600px; }
+
+@media print {
+    .container { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; }
+    .btn-back, .btn-submit, .btn-save-batch, .btn-add-row, .btn-delete, .report-controls, .btn-excel, a, .btn-edit-item, .btn-delete-item, .btn-mini-edit { display: none; }
+    .batch-container { border: none; border-bottom: 2px dashed #999; padding: 10px 0; }
+    .edit-input { border: none; padding: 0; }
+}
+
+
+/* ========================================================
+   📱 [全新特化] 手機端響應式重設計（僅在螢幕寬度 < 768px 生效）
+   ======================================================== */
+@media (max-width: 767px) {
+    body {
+        padding: 8px;
+        background-color: #f5f7fa; /* 換上較柔和乾淨的淺色背景 */
+    }
+
+    .container {
+        padding: 16px;
+        box-shadow: none;
+        border-radius: 12px;
+    }
+
+    /* --- 頂部對照表與計算機按鈕重新設計：並排大按鈕 --- */
+    .btn-top-right {
+        position: static !important; /* 取消絕對懸浮 */
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48% !important;
+        margin-bottom: 16px;
+        height: 42px;
+        border-radius: 6px;
+        border: 1px solid #dcdfe6 !important;
+        background-color: #fff !important;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.02) !important;
+        transform: none !important;
+    }
+    /* 讓兩顆按鈕平均分配寬度並推開 */
+    .btn-top-right:nth-of-type(2) {
+        float: right;
+    }
+
+    /* --- 大架構拆解：左右並排強制改為上下堆疊 --- */
+    .part1 {
+        flex-direction: column !important;
+        gap: 20px;
+    }
+    
+    .part1-left, .part1-right {
+        width: 100% !important;
+        padding: 0 !important;
+    }
+
+    /* --- 左側案件基本資料表單美化 --- */
+    .part1-left {
+        background-color: #fff !important;
+        border: 1px solid #e4e7ed;
+        padding: 16px !important;
+        border-radius: 10px;
+    }
+
+    .part1 p {
+        flex-direction: column !important; /* 標題在上，欄位在下 */
+        align-items: stretch !important;
+        margin-bottom: 14px !important;
+    }
+
+    .p1-font-w {
+        width: 100% !important;
+        margin-bottom: 6px;
+        text-align: left !important;
+        font-size: 14px;
+        color: #5a6a85;
+    }
+
+    /* 提升手機版輸入框和下拉選單的操作高度與字體 */
+    input[type="date"], .p1-in1, .p1-in2, .p1-in3, .datechooser select {
+        width: 100% !important;
+        height: 44px !important;
+        font-size: 16px !important; /* 關鍵：大於16px能防止 iOS 自動放大網頁 */
+        padding: 8px 12px !important;
+        border: 1px solid #dcdfe6 !important;
+        border-radius: 6px !important;
+        background-color: #fff !important;
+    }
+
+    /* --- 右側撥款人：全面升級成獨立卡片設計 (Card UI) --- */
+    .list-header {
+        display: none !important; /* 隱藏不合適的手機橫向表頭 */
+    }
+
+    .row-inputs {
+        flex-direction: column !important; /* 一筆款項變一個垂直卡片 */
+        align-items: stretch !important;
+        background: #ffffff !important;
+        border: 1px solid #e4e7ed !important;
+        border-left: 4px solid var(--accent-color) !important; /* 左側點綴優雅顏色條 */
+        border-radius: 8px !important;
+        padding: 16px !important;
+        gap: 10px !important;
+        margin-bottom: 12px !important;
+        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04) !important;
+    }
+
+    .row-inputs input {
+        width: 100% !important;
+        height: 42px !important;
+        font-size: 15px !important;
+        padding: 8px 12px !important;
+        border: 1px solid #dcdfe6 !important;
+        border-radius: 6px !important;
+    }
+
+    /* 手機版優化：精緻的刪除按鈕 */
+    .btn-delete {
+        width: 100% !important;
+        height: 38px !important;
+        background-color: #fff0f0 !important;
+        color: #f56c6c !important;
+        border: 1px solid #fde2e2 !important;
+        border-radius: 6px !important;
+        font-weight: bold;
+        margin-top: 4px;
+    }
+    .btn-delete:hover { background-color: #f56c6c !important; color: #fff !important; }
+
+    /* 「+ 增加此案撥款人」按鈕加高加大，更利於手指點擊 */
+    .btn-add-row {
+        height: 46px;
+        border-radius: 8px;
+        font-size: 16px;
+        margin-top: 5px;
+        box-shadow: 0 4px 12px rgba(41, 128, 185, 0.15);
+    }
+
+    /* --- 底部四大操作按鈕（暫存、結算等）：改為垂直滿版排列，防止字體擠壓溢出 --- */
+    .action-buttons {
+        flex-direction: column !important;
+        gap: 12px !important;
+        margin-top: 24px;
+        border-top: 2px dashed #e4e7ed;
+        padding-top: 20px;
+    }
+
+    .btn-save-batch, .btn-submit, .btn-back, .btn-excel {
+        width: 100% !important;
+        height: 48px !important;
+        border-radius: 8px !important;
+        font-size: 16px !important;
+        margin: 0 !important;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    /* --- 彈出計算機視窗防溢出修正 --- */
+    .floating-calc {
+        width: 94% !important;
+        left: 3% !important;
+        right: 3% !important;
+        top: 12% !important;
+    }
+}
