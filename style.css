@@ -107,6 +107,81 @@
           box-sizing: border-box;
         }
 
+        /* 尋找你原本讓左右並排的父級 selector */
+        .your-main-flex-container {
+          display: flex;
+          flex-direction: column; /* 手機端一律由上往下排 */
+          width: 100%;
+          gap: 20px;
+        }
+
+        .left-form-section {
+          width: 100%; /* 不要寫死 px，讓它在手機端拿滿寬度 */
+        }
+        
+        /* 裡面的輸入框欄位組 */
+        .form-group {
+          display: flex;
+          flex-direction: column; /* 標題在上面，輸入框在下面 */
+          align-items: flex-start;
+          margin-bottom: 15px;
+          width: 100%;
+        }
+        
+        .form-group input, 
+        .form-group select {
+          width: 100%; /* 讓輸入框填滿 */
+          box-sizing: border-box;
+        }
+        
+        /* 每一組「姓名+金額+掃描費+刪除」的橫列 */
+        .beneficiary-row {
+          display: flex;
+          flex-direction: column; /* 手機端改垂直 */
+          gap: 10px;
+          background: #f8f9fa;
+          padding: 15px;
+          border-radius: 8px;
+          margin-bottom: 12px;
+        }
+        
+        /* 讓手機端的輸入框有足夠高度與寬度 */
+        .beneficiary-row input {
+          width: 100%;
+          padding: 8px;
+          font-size: 16px; /* 至少 16px，iOS 點擊才不會自動放大網頁 */
+        }
+        
+        /* 電腦端再改回橫排 */
+        @media (min-width: 768px) {
+          .beneficiary-row {
+            flex-direction: row;
+            align-items: center;
+          }
+        }
+       .button-group {
+          display: flex;
+          flex-direction: column; /* 手機端上下堆疊 */
+          gap: 12px;
+          width: 100%;
+          margin-top: 20px;
+        }
+        
+        .button-group button,
+        .button-group .btn {
+          width: 100%;
+          height: auto;
+          padding: 12px 0; /* 用內距撐開高度，不要寫死 height */
+          font-size: 16px;
+          text-align: center;
+        }
+        
+        @media (min-width: 768px) {
+          .button-group {
+            flex-direction: row; /* 電腦端左右並排 */
+          }
+        }
+
         /* 圖片與輸入框防溢出 */
         input, select, textarea {
           max-width: 100%;
