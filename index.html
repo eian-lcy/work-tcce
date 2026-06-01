@@ -157,16 +157,23 @@
                         onkeyup="filterRegistryTable()"
                         style="width:100%; padding:10px; font-size:16px; border:1px solid #ccc; border-radius:4px;">
                 </div>
-                <table class="registry-table">
-                    <thead>
-                        <tr>
-                            <th width="40%">簡稱</th>
-                            <th>全稱</th>
-                        </tr>
-                    </thead>
-                    <tbody id="registryTableBody">
+                <table id="companyTable">
+                  <thead>
+                    <tr>
+                      <th>簡稱</th>
+                      <th>全稱</th>
+                      <th>操作</th> </tr>
+                  </thead>
+                  <tbody id="companyTableBody">
                     </tbody>
                 </table>
+                
+                <div style="margin-top: 15px; border-top: 1px solid #ccc; padding-top: 15px;">
+                  <h4>➕ 添加新對照</h4>
+                  <input type="text" id="newShortName" placeholder="輸入簡稱 (如: TCCE)">
+                  <input type="text" id="newFullName" placeholder="輸入全稱 (如: 台中律師公會)">
+                  <button onclick="handleAddCompany()">新增</button>
+                </div>
             </div>
         </div>
     </div>
