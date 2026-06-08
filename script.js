@@ -756,64 +756,129 @@ function updateUsageData(input) {
 
 function calculateRow(element) {
     const row = element.closest('tr');
-    const amountInput = row.querySelector('.amount-input');
-    const chkTax = row.querySelector('.chk-tax');
-    const chkHealth = row.querySelector('.chk-health');
-    const spanTax = row.querySelector('.val-tax');
-    const spanHealth = row.querySelector('.val-health');
-    const spanNet = row.querySelector('.val-net');
-
-    let amount = parseFloat(amountInput.value) || 0;
-
-    let tax = 0;
-    if (chkTax.checked && amount > 0) {
-        tax = Math.round(amount * 0.1);
-    }
-    spanTax.textContent = tax > 0 ? tax : "0";
-
-    let health = 0;
-    if (chkHealth.checked && amount > 0) {
-        health = Math.round(amount * 0.0211);
-    }
-    spanHealth.textContent = health > 0 ? health : "0";
-
-    let net = amount - tax - health;
-    spanNet.textContent = net;
-
     const name = row.getAttribute('data-name');
-    updateSubtotal(name);
-
-    const batchId = parseInt(row.getAttribute('data-batch-id'));
-    const payeeIndex = parseInt(row.getAttribute('data-payee-index'));
-    const type = row.getAttribute('data-type');
-
-    const batch = allBatches.find(b => b.id === batchId);
-    if (batch && batch.payees[payeeIndex]) {
-        if (type === 'income') {
-            batch.payees[payeeIndex].amount = amount;
-            batch.payees[payeeIndex].isTax = chkTax.checked;
-            batch.payees[payeeIndex].isHealth = chkHealth.checked;
-        } else if (type === 'scan') {
-            batch.payees[payeeIndex].scanFee = Math.abs(amount);
-        }
+    
+    // 抓出這個人的所有資料列
+    const personRows = document.querySelectorAll(`.calc-row[data-name="${name}"]`);
+    
+    // 自動判斷身分 (沿用你在 saveCurrentBatch 裡的邏輯)
+    let payeeType = '個人';
+    if (name.includes("公司") || name.includes("郵局") || name.includes("企業") || name === "麗邦企業社") {
+        payeeType = '公司';
+    } else if (name.includes("事務所")) {
+        payeeType = '事務所';
     }
+
+    // 呼叫群組計算函數
+    calculatePayeeGroup(name, payeeType, personRows);
 }
 
-function updateSubtotal(name) {
-    const rows = document.querySelectorAll(`.calc-row[data-name="${name}"]`);
+function calculatePayeeGroup(name, payeeType, rows) {
+    let eligibleForNHI = 0;
+
+    // --- 第一階段：若是個人，先計算「二代健保有效累計金額」 ---
+    if (payeeType === '個人') {
+        rows.forEach(row => {
+            let amountInput = row.querySelector('.amount-input');
+            let usageInput = row.querySelector('.usage-input'); // 用途欄位
+            
+            let amount = parseFloat(amountInput.value) || 0;
+            let usage = usageInput ? usageInput.value : '';
+
+            // 判斷是否為排除項目 (負項、複審費、津貼)
+            let isExcluded = usage.includes('複審費') || usage.includes('津貼') || amount < 0;
+
+            if (!isExcluded) {
+                eligibleForNHI += amount;
+            }
+        });
+    }
 
     let sumListed = 0;
     let sumTax = 0;
     let sumHealth = 0;
     let sumNet = 0;
 
+    // --- 第二階段：逐筆計算並更新每一列的畫面與資料 ---
     rows.forEach(row => {
-        sumListed += parseFloat(row.querySelector('.amount-input').value) || 0;
-        sumTax += parseFloat(row.querySelector('.val-tax').textContent) || 0;
-        sumHealth += parseFloat(row.querySelector('.val-health').textContent) || 0;
-        sumNet += parseFloat(row.querySelector('.val-net').textContent) || 0;
+        let amountInput = row.querySelector('.amount-input');
+        let usageInput = row.querySelector('.usage-input');
+        let chkTax = row.querySelector('.chk-tax');
+        let chkHealth = row.querySelector('.chk-health');
+        let spanTax = row.querySelector('.val-tax');
+        let spanHealth = row.querySelector('.val-health');
+        let spanNet = row.querySelector('.val-net');
+
+        let amount = parseFloat(amountInput.value) || 0;
+        let usage = usageInput ? usageInput.value : '';
+        
+        let tax = 0;
+        let nhi = 0;
+
+        // 規則 1: 公司 (無扣繳、無健保)
+        if (payeeType === '公司') {
+            tax = 0;
+            nhi = 0;
+            if(chkTax) chkTax.checked = false;
+            if(chkHealth) chkHealth.checked = false;
+        } 
+        // 規則 2: 事務所 (扣 10% 稅，無健保)
+        else if (payeeType === '事務所') {
+            tax = Math.round(amount * 0.1); 
+            nhi = 0;
+            if(chkTax) chkTax.checked = true;
+            if(chkHealth) chkHealth.checked = false;
+        } 
+        // 規則 3: 個人 (累計超兩萬扣健保，排除特定項目)
+        else if (payeeType === '個人') {
+            let isExcluded = usage.includes('複審費') || usage.includes('津貼') || amount < 0;
+
+            // 個人的稅額依據 checkbox 是否被手動勾選來決定
+            if (chkTax && chkTax.checked && amount > 0) {
+                tax = Math.round(amount * 0.1);
+            }
+
+            // 健保費判斷：非排除項目 且 累計達兩萬
+            if (!isExcluded && eligibleForNHI >= 20000) {
+                nhi = Math.round(amount * 0.0211);
+                if(chkHealth) chkHealth.checked = true; // 自動打勾
+            } else {
+                nhi = 0;
+                if(chkHealth) chkHealth.checked = false; // 自動取消打勾
+            }
+        }
+
+        // 更新單列 HTML 顯示數值
+        if (spanTax) spanTax.textContent = tax > 0 ? tax : "0";
+        if (spanHealth) spanHealth.textContent = nhi > 0 ? nhi : "0";
+        
+        let net = amount - tax - nhi;
+        if (spanNet) spanNet.textContent = net;
+
+        // 累加該受款人的小計
+        sumListed += amount;
+        sumTax += tax;
+        sumHealth += nhi;
+        sumNet += net;
+
+        // 同步回寫到 JavaScript 記憶體 (allBatches) 中，以便 Excel 匯出正確
+        const batchId = parseInt(row.getAttribute('data-batch-id'));
+        const payeeIndex = parseInt(row.getAttribute('data-payee-index'));
+        const type = row.getAttribute('data-type');
+        const batch = allBatches.find(b => b.id === batchId);
+        
+        if (batch && batch.payees[payeeIndex]) {
+            if (type === 'income') {
+                batch.payees[payeeIndex].amount = amount;
+                batch.payees[payeeIndex].isTax = (tax > 0);
+                batch.payees[payeeIndex].isHealth = (nhi > 0);
+            } else if (type === 'scan') {
+                batch.payees[payeeIndex].scanFee = Math.abs(amount);
+            }
+        }
     });
 
+    // --- 第三階段：更新報表上的小計列與合併儲存格 ---
     const subRow = document.getElementById(`subtotal-${name}`);
     if (subRow) {
         subRow.querySelector('.sub-listed').textContent = sumListed.toLocaleString();
@@ -826,6 +891,7 @@ function updateSubtotal(name) {
         mergedNetCell.textContent = sumNet.toLocaleString();
     }
 
+    // 觸發最下方的總計更新
     updateGrandTotal();
 }
 
