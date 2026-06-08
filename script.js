@@ -846,14 +846,14 @@ function updateGrandTotal() {
 }
 
 function recalculateAll() {
-    // document.querySelectorAll('.amount-input').forEach(input => {
-    //     calculateRow(input);
-    // });
+    // 1. 恢復這段被註解的程式碼，讓畫面初始載入時觸發計算
     document.querySelectorAll('.amount-input').forEach(input => {
-    input.addEventListener('input', () => {
-        updateTotals(); // 每次輸入都觸發重新計算
+        calculateRow(input);
     });
-});
+
+    // 2. 原本的 addEventListener 可以移除
+    // 因為你在 renderReportForSelectedDate 的 HTML 模板裡
+    // 已經寫了 oninput="calculateRow(this)"，重複綁定可能會造成預期外的衝突
 }
 
 function goBack() {
