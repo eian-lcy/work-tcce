@@ -211,11 +211,16 @@ function updateUsagePreview() {
     if (cat1 === "津貼") {
         if (cat2 === "喪葬津貼") {
             finalUsage = "奠儀";
+        } else if (cat2 === "其他") {
+            // 當選擇津貼的「其他」時，優先使用備註細項(extraNote)
+            // 如果還沒輸入，就先暫時顯示「其他津貼」防呆
+            finalUsage = extraNote ? extraNote : "其他津貼"; 
         } else {
             finalUsage = cat2;
         }
     }
     else if (cat1 === "其他") {
+        // 主分類為「其他」時的邏輯維持不變
         finalUsage = extraNote ? extraNote : "雜支";
     }
     else {
