@@ -10,7 +10,7 @@ const categoryData = {
     "耐震": ["耐震標章", "其他"],
     "結構": ["結構外審", "結構變更", "其他"],
     "津貼": ["生育津貼", "結婚津貼", "住院津貼", "喪葬津貼", "其他"],
-    "其他": ["其他"]
+    "其他": ["其他", "郵資", "宅配"]
 };
 
 let allBatches = [];
@@ -21,7 +21,14 @@ let currentRightClickInput = null; // 暫存目前被按右鍵的輸入框
 // ==========================================
 window.onload = function () {
     const dateInput = document.getElementById('dateInput');
-    if (dateInput) dateInput.valueAsDate = new Date();
+    if (dateInput) {
+        dateInput.valueAsDate = new Date();
+        // 👈 新增：當手動更動撥款日期時，自動重新計算用途與備註的月份
+        dateInput.addEventListener('change', function() {
+            updateUIState();
+            updateUsagePreview();
+        });
+    }
     initCategorySelects();
     addRow();
 
@@ -94,14 +101,37 @@ function updateUIState() {
         scanInputs.forEach(input => input.value = '');
     }
 
+    // 處理「郵資」與「宅配」的自動帶入邏輯
     if (cat1Value === "其他" || cat2Value === "其他") {
         extraNoteDiv.style.display = "block";
-        if (cat1Value === "其他") {
+        
+        if (cat2Value === "郵資" || cat2Value === "宅配") {
+            extraNoteLabel.textContent = "備註說明";
+            
+            // 💡 自動計算當前選擇日期的【民國年】與【前一月份】
+            const dateVal = document.getElementById('dateInput').value;
+            const currentDate = dateVal ? new Date(dateVal) : new Date();
+            let targetMonth = currentDate.getMonth(); // getMonth() 0-11 剛好代表前一個月(1-12)
+            let targetYear = currentDate.getFullYear() - 1911;
+            
+            // 跨年防呆：如果當前是 1 月，前一月就是去年的 12 月
+            if (targetMonth === 0) {
+                targetMonth = 12;
+                targetYear -= 1;
+            }
+            const formattedMonth = String(targetMonth).padStart(2, '0');
+            
+            const firstPayee = document.querySelector('.payee-name');
+            if (cat2Value === "郵資") {
+                extraNoteInput.value = `${targetYear}年${formattedMonth}月份郵資`;
+                if (firstPayee) firstPayee.value = "台中文心路郵局郵務業務劃撥專戶";
+            } else {
+                extraNoteInput.value = `${targetYear}年${formattedMonth}月份宅配通費用`;
+                if (firstPayee) firstPayee.value = "台灣宅配通股份有限公司";
+            }
+        } else {
             extraNoteLabel.textContent = "備註說明";
             extraNoteInput.placeholder = "請輸入雜支說明...";
-        } else {
-            extraNoteLabel.textContent = "輸入分類二";
-            extraNoteInput.placeholder = "請輸入分類二細項...";
         }
     } else {
         extraNoteDiv.style.display = "none";
@@ -113,7 +143,8 @@ function updateUIState() {
     const caseRow = caseNoInput.closest('p');
     const deptRow = deptInput.closest('p');
 
-    if (cat1Value === "津貼") {
+    // 💡 當選擇「津貼」或分類二是「郵資」、「宅配」時，隱藏案號與申請單位
+    if (cat1Value === "津貼" || cat2Value === "郵資" || cat2Value === "宅配") {
         caseRow.style.display = 'none';
         deptRow.style.display = 'none';
         caseNoInput.value = '';
