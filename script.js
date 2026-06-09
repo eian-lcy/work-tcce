@@ -19,11 +19,13 @@ let currentRightClickInput = null; // 暫存目前被按右鍵的輸入框
 // ==========================================
 // 2. 初始化與介面連動
 // ==========================================
+// 在全域宣告一個變數，用來記憶目前歷史紀錄切換到哪一筆
+let currentDeptHistoryIndex = -1;
+
 window.onload = function () {
     const dateInput = document.getElementById('dateInput');
     if (dateInput) {
         dateInput.valueAsDate = new Date();
-        // 👈 新增：當手動更動撥款日期時，自動重新計算用途與備註的月份
         dateInput.addEventListener('change', function() {
             updateUIState();
             updateUsagePreview();
@@ -45,6 +47,42 @@ window.onload = function () {
             e.returnValue = '';
         }
     });
+
+    // 💡 新增：申請單位輸入格的「上下鍵」喚回紀錄功能
+    const deptInput = document.getElementById('deptInput');
+    if (deptInput) {
+        deptInput.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+                e.preventDefault(); // 防止按上下鍵時游標在輸入框內亂跑
+
+                // 抓取已儲存案件 (allBatches) 中，不重複且不為空白的申請單位
+                const history = [...new Set(allBatches.map(b => b.dept).filter(Boolean))];
+
+                if (history.length === 0) return; // 如果沒有歷史紀錄就無動作
+
+                if (e.key === 'ArrowUp') {
+                    currentDeptHistoryIndex--;
+                    if (currentDeptHistoryIndex < 0) {
+                        currentDeptHistoryIndex = history.length - 1; // 循環到底部
+                    }
+                } else if (e.key === 'ArrowDown') {
+                    currentDeptHistoryIndex++;
+                    if (currentDeptHistoryIndex >= history.length) {
+                        currentDeptHistoryIndex = 0; // 循環到頂部
+                    }
+                }
+
+                // 將歷史紀錄填入輸入框，並即時更新下方用途預覽
+                deptInput.value = history[currentDeptHistoryIndex];
+                updateUsagePreview();
+            }
+        });
+
+        // 當使用者自己手動打字時，重置索引，以便下次按鍵時重新開始
+        deptInput.addEventListener('input', function() {
+            currentDeptHistoryIndex = -1;
+        });
+    }
 };
 
 function initCategorySelects() {
@@ -92,6 +130,7 @@ function updateUIState() {
     const extraNoteDiv = document.getElementById('extraNoteDiv');
     const extraNoteLabel = document.getElementById('extraNoteLabel');
     const extraNoteInput = document.getElementById('extraNoteInput');
+    const firstPayee = document.querySelector('.payee-name'); // 取得畫面上第一個受款人
 
     if (cat1Value === "鑑定") {
         page1Div.classList.add('show-scan');
@@ -101,27 +140,24 @@ function updateUIState() {
         scanInputs.forEach(input => input.value = '');
     }
 
-    // 處理「郵資」與「宅配」的自動帶入邏輯
+    // 處理「郵資」與「宅配」的自動帶入與清空邏輯
     if (cat1Value === "其他" || cat2Value === "其他") {
         extraNoteDiv.style.display = "block";
         
         if (cat2Value === "郵資" || cat2Value === "宅配") {
             extraNoteLabel.textContent = "備註說明";
             
-            // 💡 自動計算當前選擇日期的【民國年】與【前一月份】
             const dateVal = document.getElementById('dateInput').value;
             const currentDate = dateVal ? new Date(dateVal) : new Date();
-            let targetMonth = currentDate.getMonth(); // getMonth() 0-11 剛好代表前一個月(1-12)
+            let targetMonth = currentDate.getMonth(); 
             let targetYear = currentDate.getFullYear() - 1911;
             
-            // 跨年防呆：如果當前是 1 月，前一月就是去年的 12 月
             if (targetMonth === 0) {
                 targetMonth = 12;
                 targetYear -= 1;
             }
             const formattedMonth = String(targetMonth).padStart(2, '0');
             
-            const firstPayee = document.querySelector('.payee-name');
             if (cat2Value === "郵資") {
                 extraNoteInput.value = `${targetYear}年${formattedMonth}月份郵資`;
                 if (firstPayee) firstPayee.value = "台中文心路郵局郵務業務劃撥專戶";
@@ -132,10 +168,23 @@ function updateUIState() {
         } else {
             extraNoteLabel.textContent = "備註說明";
             extraNoteInput.placeholder = "請輸入雜支說明...";
+            
+            // 💡 新增：從郵寄/宅配改選為「其他」時，自動清空
+            if (firstPayee && (firstPayee.value === "台中文心路郵局郵務業務劃撥專戶" || firstPayee.value === "台灣宅配通股份有限公司")) {
+                firstPayee.value = "";
+            }
+            if (extraNoteInput.value.includes("郵資") || extraNoteInput.value.includes("宅配通費用")) {
+                extraNoteInput.value = "";
+            }
         }
     } else {
         extraNoteDiv.style.display = "none";
         extraNoteInput.value = "";
+        
+        // 💡 新增：切換回別的大分類(如鑑定、房屋)時，也清空
+        if (firstPayee && (firstPayee.value === "台中文心路郵局郵務業務劃撥專戶" || firstPayee.value === "台灣宅配通股份有限公司")) {
+            firstPayee.value = "";
+        }
     }
 
     const caseNoInput = document.getElementById('caseNoInput');
@@ -143,7 +192,6 @@ function updateUIState() {
     const caseRow = caseNoInput.closest('p');
     const deptRow = deptInput.closest('p');
 
-    // 💡 當選擇「津貼」或分類二是「郵資」、「宅配」時，隱藏案號與申請單位
     if (cat1Value === "津貼" || cat2Value === "郵資" || cat2Value === "宅配") {
         caseRow.style.display = 'none';
         deptRow.style.display = 'none';
