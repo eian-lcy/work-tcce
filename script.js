@@ -1077,62 +1077,9 @@ function importFromExcel(input) {
 // ==========================================
 // 7. 彈出視窗控制邏輯
 // ==========================================
-function openRegistryModal() {
-    const modal = document.getElementById('registryModal');
-    const tbody = document.getElementById('registryTableBody');
-    const searchInput = document.getElementById('registrySearchInput');
-
-    searchInput.value = '';
-    tbody.innerHTML = '';
-
-    const entries = Object.entries(rawPayeeRegistry);
-
-    if (entries.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#999;">目前尚無設定對照表</td></tr>';
-    } else {
-        entries.forEach(([short, full]) => {
-            const displayShort = short.replace(/,/g, '<br><span style="color:#aaa; font-size:0.9em;">或者是</span> ');
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-        <td style="font-weight:bold; color:#2c3e50;">${displayShort}</td> <td>${full}</td>
-    `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    modal.style.display = "block";
-
-    setTimeout(() => {
-        searchInput.focus();
-    }, 100);
-}
 
 function closeRegistryModal() {
     document.getElementById('registryModal').style.display = "none";
-}
-
-function filterRegistryTable() {
-    const input = document.getElementById('registrySearchInput');
-    const filter = input.value.toUpperCase();
-    const tbody = document.getElementById('registryTableBody');
-    const tr = tbody.getElementsByTagName('tr');
-
-    for (let i = 0; i < tr.length; i++) {
-        const tdShort = tr[i].getElementsByTagName("td")[0];
-        const tdFull = tr[i].getElementsByTagName("td")[1];
-
-        if (tdShort && tdFull) {
-            const txtShort = tdShort.textContent || tdShort.innerText;
-            const txtFull = tdFull.textContent || tdFull.innerText;
-
-            if (txtShort.toUpperCase().indexOf(filter) > -1 || txtFull.toUpperCase().indexOf(filter) > -1) {
-                tr[i].style.display = ""; 
-            } else {
-                tr[i].style.display = "none"; 
-            }
-        }
-    }
 }
 
 window.onclick = function (event) {
