@@ -233,9 +233,17 @@ async function handleDeleteCompany(id) {
 }
 
 // 打開 Modal
+// 打開 Modal
 async function openRegistryModal() {
     const modal = document.getElementById('payee-modal') || document.getElementById('registryModal');
     if (modal) modal.style.display = 'block';
+    
+    // 開啟時自動對焦到搜尋框，方便直接打字
+    setTimeout(() => {
+        const searchInput = document.getElementById('registrySearchInput');
+        if (searchInput) searchInput.focus();
+    }, 100);
+
     await loadCompanyData();
 }
 
